@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="com.mendix.widget.PullToRefresh.PullToRefresh" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>PullToRefresh</name>
+    <description>Swipe or pull down to reload a page</description>
+    <icon/>
+    <properties>
+        <property key="key1" type="boolean" defaultValue="false">
+            <caption>Color</caption>
+            <category>Display</category>
+            <description/>
+        </property>
+    </properties>
+</widget>
