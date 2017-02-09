@@ -1,5 +1,5 @@
 // Type definitions for core-js v0.9.7
-declare type PropertyKey = string | number | symbol;
+//declare type PropertyKey = string | number | symbol;
 declare var Symbol: SymbolConstructor;
 
 interface Symbol {

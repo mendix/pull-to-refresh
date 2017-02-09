@@ -1,10 +1,12 @@
 import { DOM, createElement } from "react";
 
-import * as PullToRefresh_ from "react-pull-to-refresh";
+import * as PullToRefresh from "react-pull-to-refresh";
+
+// import * as Hammer from "hammerjs";
 
 
 export const PullToRefreshComponent = () => {
-    return createElement(PullToRefresh_, {
+    return createElement(PullToRefresh, {
         onRefresh: handleRefresh
     },
         DOM.div({className: "class1"}, "this is Element1"),

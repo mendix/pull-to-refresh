@@ -1,15 +1,21 @@
 import * as dojoDeclare from "dojo/_base/declare";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
 
-import { createElement } from "react";
-import { render, unmountComponentAtNode } from "react-dom";
+import { unmountComponentAtNode } from "react-dom";
 
-import { PullToRefreshComponent } from "./components/PullToRefresh";
+import { WebPullToRefresh } from "./components/WebPullToRefresh";
 
 class PullToRefresh extends WidgetBase {
-    // Properties from Mendix modeler
 
     private contextObject: mendix.lib.MxObject;
+
+    postCreate() {
+        const contentNode = document.getElementById("content");
+        const ptrElHtml = `<div id="ptr"><span class="glyphicon glyphicon-repeat"></span>
+            <div class="loading"><span id="l1"></span><span id="l2"></span><span id="l3"></span></div></div>`;
+        const ptrElNew = (new DOMParser()).parseFromString(ptrElHtml, "text/html");
+        document.body.insertBefore(ptrElNew, contentNode);
+    }
 
     update(contextObject: mendix.lib.MxObject, callback?: Function) {
         this.contextObject = contextObject;
@@ -27,7 +33,15 @@ class PullToRefresh extends WidgetBase {
     }
 
     private updateRendering() {
-        render(createElement(PullToRefreshComponent), this.domNode);
+        new WebPullToRefresh().init({ // Todo, put the code in the constructor
+            loadingFunction: this.refreshPage
+        });
+    }
+
+    private refreshPage() {
+        return (new Promise<string>(() => {
+            mx.ui.reload();
+        }));
     }
 
 }
