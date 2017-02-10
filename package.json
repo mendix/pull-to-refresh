@@ -20,7 +20,6 @@
     "@types/core-js": "^0.9.35",
     "@types/dojo": "^1.9.35",
     "@types/enzyme": "^2.4.36",
-    "@types/es6-shim": "^0.31.32",
     "@types/jasmine": "^2.5.35",
     "@types/karma": "^0.13.33",
     "@types/react": "^15.0.0",

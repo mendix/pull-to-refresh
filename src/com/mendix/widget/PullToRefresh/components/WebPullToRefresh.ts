@@ -1,10 +1,9 @@
 import * as Hammer from "hammerjs";
 
-
 interface WebPullToRefreshOptions {
     contentEl?: HTMLElement | null;
     ptrEl: HTMLElement | null;
-    bodyEl: HTMLElement;
+    bodyEl?: HTMLElement;
     distanceToRefresh: number;
     loadingFunction: Function;
     resistance: number;
@@ -14,23 +13,20 @@ interface WebPullToRefreshOptions {
 export class WebPullToRefresh {
     private defaults: WebPullToRefreshOptions;
     private options: WebPullToRefreshOptions;
+    private bodyEl: HTMLElement;
     private pan = {
         distance: 0,
         enabled: false,
         startingPositionY: 0
     };
-    private bodyClass = this.defaults.bodyEl.classList;
+    private bodyClass: DOMTokenList;
 
     constructor() {
-        // TODO: REDO
-        // const contentNode = document.getElementById("content");
-        // const ptrElHtml = `<div id="ptr"><span class="glyphicon glyphicon-repeat"></span>
-        //     <div class="loading"><span id="l1"></span><span id="l2"></span><span id="l3"></span></div></div>`;
-        // const ptrElNew = (new DOMParser()).parseFromString(ptrElHtml, "text/html");
-        // document.body.insertBefore(ptrElNew, contentNode);
-
+        this.panStart = this.panStart.bind(this);
+        this.panDown = this.panDown.bind(this);
+        this._panUp = this._panUp.bind(this);
+        this._panEnd = this._panEnd.bind(this);
         this.defaults = {
-            bodyEl: document.body,
             contentEl: document.getElementById("content"),
             distanceToRefresh: 70,
             loadingFunction: () => null,
@@ -42,25 +38,25 @@ export class WebPullToRefresh {
             enabled: false,
             startingPositionY: 0
         };
-
-        this.bodyClass = this.defaults.bodyEl.classList;
     }
 
-    init(params: any) {
+    init(params: { bodyEl: HTMLElement, loadingFunction: Function, hammerOptions?: Object, resistance?: number }) {
+        this.bodyEl = params.bodyEl;
+        this.bodyClass = this.bodyEl.classList;
         this.options = {
-            bodyEl: this.defaults.bodyEl,
+            bodyEl: params.bodyEl,
             contentEl: document.getElementById("content"),
-            distanceToRefresh: params.distanceToRefresh || this.defaults.distanceToRefresh,
-            hammerOptions: params.hammerOptions || {},
-            loadingFunction: params.loadingFunction || this.defaults.loadingFunction,
+            distanceToRefresh: 70,
+            hammerOptions: {},
+            loadingFunction: params.loadingFunction,
             ptrEl: document.getElementById("ptr"),
-            resistance: params.resistance || this.defaults.resistance
+            resistance: 2.5
         };
         if (!this.options.contentEl || !this.options.ptrEl) {
             return;
         }
 
-        this.bodyClass = this.options.bodyEl.classList;
+        this.bodyClass = this.bodyEl.classList;
 
         const hammer = new Hammer(this.options.contentEl, this.options.hammerOptions);
 
@@ -73,7 +69,7 @@ export class WebPullToRefresh {
     }
 
     private panStart() {
-        this.pan.startingPositionY = this.options.bodyEl.scrollTop;
+        this.pan.startingPositionY = this.bodyEl.scrollTop;
 
         if (this.pan.startingPositionY === 0) {
             this.pan.enabled = true;
@@ -111,8 +107,10 @@ export class WebPullToRefresh {
 
     private _setContentPan() {
         if (this.options.contentEl && this.options.ptrEl) {
-            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, " + this.pan.distance + "px, 0 )";
-            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, " + (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
+            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, "
+                + this.pan.distance + "px, 0 )";
+            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, "
+                + (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
         }
     }
 
@@ -128,14 +126,13 @@ export class WebPullToRefresh {
         if (!this.pan.enabled) {
             return;
         }
-
         event.preventDefault();
-        if (this.options.contentEl && this.options.ptrEl) { // TODO: validation so if contentID or ptrID elements are missing from the document
+        // TODO: validation so if contentID or ptrID elements are missing from the document
+        if (this.options.contentEl && this.options.ptrEl) {
             this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "";
             this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "";
         }
-
-        if (this.options.bodyEl.classList.contains("ptr-refresh")) {
+        if (this.bodyEl.classList.contains("ptr-refresh")) {
             this._doLoading();
         } else {
             this._doReset();
@@ -147,17 +144,13 @@ export class WebPullToRefresh {
 
     private _doLoading() {
         this.bodyClass.add("ptr-loading");
-
-        // If no valid loading function exists, just reset elements
         if (!this.options.loadingFunction) {
             return this._doReset();
         }
-
-        // For UX continuity, make sure we show loading for at least one second before resetting
-        setTimeout(
-            // Once actual loading is complete, reset pull to refresh
-            this.options.loadingFunction().then(this._doReset)
-            , 1000);
+        setTimeout(() => {
+            const promise = this.options.loadingFunction();
+            promise.then(this._doReset);
+        }, 1000);
     }
 
     private _doReset() {
@@ -165,13 +158,13 @@ export class WebPullToRefresh {
         this.bodyClass.remove("ptr-refresh");
         this.bodyClass.add("ptr-reset");
 
-        this.options.bodyEl.addEventListener("transitionend", this.bodyClassRemove, false);
+        this.bodyEl.addEventListener("transitionend", this.bodyClassRemove, false);
     }
 
     private bodyClassRemove() {
-        this.bodyClass.remove("ptr-reset");
-        this.options.bodyEl.removeEventListener("transitionend", this.bodyClassRemove, false);
+        if (this.bodyClass) {
+            this.bodyClass.remove("ptr-reset");
+            this.bodyEl.removeEventListener("transitionend", this.bodyClassRemove, false);
+        }
     }
-
-
 }

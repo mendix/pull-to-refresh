@@ -11,10 +11,11 @@ class PullToRefresh extends WidgetBase {
 
     postCreate() {
         const contentNode = document.getElementById("content");
-        const ptrElHtml = `<div id="ptr"><span class="glyphicon glyphicon-repeat"></span>
-            <div class="loading"><span id="l1"></span><span id="l2"></span><span id="l3"></span></div></div>`;
-        const ptrElNew = (new DOMParser()).parseFromString(ptrElHtml, "text/html");
-        document.body.insertBefore(ptrElNew, contentNode);
+        const wrapper = document.createElement("div");
+        wrapper.id = "ptr";
+        wrapper.innerHTML = `<span class="glyphicon glyphicon-repeat"></span>
+            <div class="loading"><span id="l1"></span><span id="l2"></span><span id="l3"></span></div>`;
+        document.body.insertBefore(wrapper, contentNode);
     }
 
     update(contextObject: mendix.lib.MxObject, callback?: Function) {
@@ -33,7 +34,8 @@ class PullToRefresh extends WidgetBase {
     }
 
     private updateRendering() {
-        new WebPullToRefresh().init({ // Todo, put the code in the constructor
+        (new WebPullToRefresh()).init({ // Todo, put the code in the constructor
+            bodyEl: document.body,
             loadingFunction: this.refreshPage
         });
     }
