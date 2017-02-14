@@ -1,5 +1,3 @@
-import * as Hammer from "hammerjs";
-
 interface WebPullToRefreshOptions {
     contentEl?: HTMLElement | null;
     ptrEl: HTMLElement | null;
@@ -7,11 +5,9 @@ interface WebPullToRefreshOptions {
     distanceToRefresh: number;
     loadingFunction: Function;
     resistance: number;
-    hammerOptions?: any;
 }
 
 export class WebPullToRefresh {
-    private defaults: WebPullToRefreshOptions;
     private options: WebPullToRefreshOptions;
     private bodyEl: HTMLElement;
     private pan = {
@@ -21,33 +17,40 @@ export class WebPullToRefresh {
     };
     private bodyClass: DOMTokenList;
 
+    private firstTouch: {
+        pageX: number,
+        pageY: number
+    } = { pageX: 0, pageY: 0 };
+
+    private lastTouch: {
+        pageX: number,
+        pageY: number
+    } = { pageX: 0, pageY: 0 };
+
+    private activeGesture: string | null = null;
+
     constructor() {
-        this.panStart = this.panStart.bind(this);
-        this.panDown = this.panDown.bind(this);
-        this._panUp = this._panUp.bind(this);
-        this._panEnd = this._panEnd.bind(this);
-        this.defaults = {
-            contentEl: document.getElementById("content"),
-            distanceToRefresh: 70,
-            loadingFunction: () => null,
-            ptrEl: document.getElementById("ptr"),
-            resistance: 2.5
-        };
-        this.pan = {
-            distance: 0,
-            enabled: false,
-            startingPositionY: 0
-        };
+        this.HandlePanDown = this.HandlePanDown.bind(this);
+        this.HandlePanEnd = this.HandlePanEnd.bind(this);
+        this.HandlePanUp = this.HandlePanUp.bind(this);
+
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
     }
 
-    init(params: { bodyEl: HTMLElement, loadingFunction: Function, hammerOptions?: Object, resistance?: number }) {
+    init(params: { bodyEl: HTMLElement, loadingFunction: Function, resistance?: number }) {
+        window.document.addEventListener("touchstart", this.handleTouchStart, { passive: true } as any);
+        window.document.addEventListener("touchmove", this.handleTouchMove, { passive: true } as any);
+        window.document.addEventListener("touchend", this.handleTouchEnd);
+        window.document.addEventListener("touchcancel", this.handleTouchEnd);
+
         this.bodyEl = params.bodyEl;
         this.bodyClass = this.bodyEl.classList;
         this.options = {
             bodyEl: params.bodyEl,
-            contentEl: document.getElementById("content"),
+            contentEl: document.getElementsByClassName("mx-page")[0] as any,
             distanceToRefresh: 70,
-            hammerOptions: {},
             loadingFunction: params.loadingFunction,
             ptrEl: document.getElementById("ptr"),
             resistance: 2.5
@@ -58,14 +61,136 @@ export class WebPullToRefresh {
 
         this.bodyClass = this.bodyEl.classList;
 
-        const hammer = new Hammer(this.options.contentEl, this.options.hammerOptions);
+        this.options.contentEl.addEventListener("panup", this.HandlePanUp);
+        this.options.contentEl.addEventListener("pandown", this.HandlePanDown);
+        this.options.contentEl.addEventListener("pandownend", this.HandlePanEnd);
+    }
 
-        hammer.get("pan").set({ direction: Hammer.DIRECTION_VERTICAL });
+    private handleTouchStart(e: any) {
+        if (e.touches.length !== 1) {
+            return;
+        }
+        this.firstTouch = {
+            pageX: e.touches[0].pageX,
+            pageY: e.touches[0].pageY
+        };
+        this.panStart();
+    }
 
-        hammer.on("panstart", this.panStart);
-        hammer.on("pandown", this.panDown);
-        hammer.on("panup", this._panUp);
-        hammer.on("panend", this._panEnd);
+    private handleTouchMove(e: any) {
+        const touch = e.touches[0];
+        this.lastTouch = {
+            pageX: touch.pageX,
+            pageY: touch.pageY
+        };
+
+        if (this.activeGesture === null && this.firstTouch) {
+            this.activeGesture = this.detectGesture();
+        }
+
+        if (this.activeGesture) {
+            this.fireEvent(e.type, e.target);
+        }
+    }
+
+    private handleTouchEnd(e: Event): void {
+        if (this.activeGesture) {
+            this.fireEvent(e.type, e.target);
+        }
+
+        this.activeGesture = null;
+        this.firstTouch = { pageX: 0, pageY: 0 };
+    }
+
+    private detectGesture() {
+        const deltaX = Math.abs(this.lastTouch.pageX - this.firstTouch.pageX);
+        const deltaY = Math.abs(this.lastTouch.pageY - this.firstTouch.pageY);
+
+        if (deltaY <= 40 && deltaX > 40) {
+            return "horizontal";
+        }
+
+        if (deltaX <= 40 && deltaY > 40) {
+            return "vertical";
+        }
+
+        return null;
+    }
+
+    private fireEvent(sourceEventType: any, target: any) {
+        const direction = this.activeGesture === "horizontal"
+            ? this.lastTouch.pageX > this.firstTouch.pageX ? "right" : "left"
+            : this.lastTouch.pageY > this.firstTouch.pageY ? "down" : "up";
+
+        let eventType = "";
+        if (sourceEventType === "touchend") {
+            eventType = "end";
+        } else if (sourceEventType === "touchcancel") {
+            eventType = "cancel";
+        }
+
+        const eventName = "pan" + direction + eventType;
+        const event = new CustomEvent(eventName, {
+            bubbles: true,
+            detail: {
+                originPageX: this.firstTouch.pageX,
+                originPageY: this.firstTouch.pageY,
+                pageX: this.lastTouch.pageX,
+                pageY: this.lastTouch.pageY
+            }
+        });
+
+        target.dispatchEvent(event);
+    }
+
+
+    private HandlePanUp(e: any) {
+        e.preventDefault();
+        if (!this.pan.enabled || this.pan.distance === 0) {
+            return;
+        }
+        const eventDistance = this.lastTouch.pageY - this.firstTouch.pageY;
+        if (this.pan.distance < eventDistance / this.options.resistance) {
+            this.pan.distance = 0;
+        } else {
+            this.pan.distance = eventDistance / this.options.resistance;
+        }
+
+        this.setContentPan();
+        this.setBodyClass();
+    }
+
+    private HandlePanDown(event: Event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (!this.pan.enabled) {
+            return;
+        }
+        const eventDistance = this.lastTouch.pageY - this.firstTouch.pageY;
+        this.pan.distance = eventDistance / this.options.resistance;
+
+        this.setContentPan();
+        this.setBodyClass();
+    }
+
+    private HandlePanEnd(event: Event) {
+        event.preventDefault();
+        if (!this.pan.enabled) {
+            return;
+        }
+        // TODO: validation so if contentID or ptrID elements are missing from the document
+        if (this.options.contentEl && this.options.ptrEl) {
+            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "";
+            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "";
+        }
+        if (this.bodyEl.classList.contains("ptr-refresh")) {
+            this.doLoading();
+        } else {
+            this.doReset();
+        }
+
+        this.pan.distance = 0;
+        this.pan.enabled = false;
     }
 
     private panStart() {
@@ -76,45 +201,17 @@ export class WebPullToRefresh {
         }
     }
 
-    private panDown(event: HammerInput) {
-        if (!this.pan.enabled) {
-            return;
-        }
-
-        event.preventDefault();
-        this.pan.distance = event.distance / this.options.resistance;
-
-        this._setContentPan();
-        this._setBodyClass();
-    }
-
-    private _panUp(e: HammerInput) {
-        if (!this.pan.enabled || this.pan.distance === 0) {
-            return;
-        }
-
-        e.preventDefault();
-
-        if (this.pan.distance < e.distance / this.options.resistance) {
-            this.pan.distance = 0;
-        } else {
-            this.pan.distance = e.distance / this.options.resistance;
-        }
-
-        this._setContentPan();
-        this._setBodyClass();
-    }
-
-    private _setContentPan() {
+    private setContentPan() {
         if (this.options.contentEl && this.options.ptrEl) {
-            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, "
-                + this.pan.distance + "px, 0 )";
-            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, "
-                + (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
+            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, " +
+                this.pan.distance + "px, 0 )";
+            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, " +
+                (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
+
         }
     }
 
-    private _setBodyClass() {
+    private setBodyClass() {
         if (this.pan.distance > this.options.distanceToRefresh) {
             this.bodyClass.add("ptr-refresh");
         } else {
@@ -122,38 +219,18 @@ export class WebPullToRefresh {
         }
     }
 
-    private _panEnd(event: HammerInput) {
-        if (!this.pan.enabled) {
-            return;
-        }
-        event.preventDefault();
-        // TODO: validation so if contentID or ptrID elements are missing from the document
-        if (this.options.contentEl && this.options.ptrEl) {
-            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "";
-            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "";
-        }
-        if (this.bodyEl.classList.contains("ptr-refresh")) {
-            this._doLoading();
-        } else {
-            this._doReset();
-        }
-
-        this.pan.distance = 0;
-        this.pan.enabled = false;
-    }
-
-    private _doLoading() {
+    private doLoading() {
         this.bodyClass.add("ptr-loading");
         if (!this.options.loadingFunction) {
-            return this._doReset();
+            return this.doReset();
         }
         setTimeout(() => {
             const promise = this.options.loadingFunction();
-            promise.then(this._doReset);
+            promise.then(this.doReset);
         }, 1000);
     }
 
-    private _doReset() {
+    private doReset() {
         this.bodyClass.remove("ptr-loading");
         this.bodyClass.remove("ptr-refresh");
         this.bodyClass.add("ptr-reset");
