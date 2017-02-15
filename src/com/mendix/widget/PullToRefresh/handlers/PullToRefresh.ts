@@ -1,4 +1,4 @@
-interface WebPullToRefreshOptions {
+interface PullToRefreshOptions {
     contentEl?: HTMLElement | null;
     ptrEl: HTMLElement | null;
     bodyEl?: HTMLElement;
@@ -7,8 +7,8 @@ interface WebPullToRefreshOptions {
     resistance: number;
 }
 
-export class WebPullToRefresh {
-    private options: WebPullToRefreshOptions;
+export class PullToRefresh {
+    private options: PullToRefreshOptions;
     private bodyEl: HTMLElement;
     private pan = {
         distance: 0,
@@ -50,9 +50,9 @@ export class WebPullToRefresh {
         this.options = {
             bodyEl: params.bodyEl,
             contentEl: document.getElementsByClassName("mx-page")[0] as any,
-            distanceToRefresh: 70,
+            distanceToRefresh: 40,
             loadingFunction: params.loadingFunction,
-            ptrEl: document.getElementById("ptr"),
+            ptrEl: document.getElementById("widget-pull-to-refresh"),
             resistance: 2.5
         };
         if (!this.options.contentEl || !this.options.ptrEl) {
@@ -180,10 +180,9 @@ export class WebPullToRefresh {
         }
         // TODO: validation so if contentID or ptrID elements are missing from the document
         if (this.options.contentEl && this.options.ptrEl) {
-            // this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "";
             this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "";
         }
-        if (this.bodyEl.classList.contains("ptr-refresh")) {
+        if (this.bodyEl.classList.contains("widget-pull-to-refresh-refresh")) {
             this.doLoading();
         } else {
             this.doReset();
@@ -203,8 +202,6 @@ export class WebPullToRefresh {
 
     private setContentPan() {
         if (this.options.contentEl && this.options.ptrEl) {
-            // this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, " +
-            //     this.pan.distance + "px, 0 )";
             this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, " +
                 (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
 
@@ -213,14 +210,14 @@ export class WebPullToRefresh {
 
     private setBodyClass() {
         if (this.pan.distance > this.options.distanceToRefresh) {
-            this.bodyClass.add("ptr-refresh");
+            this.bodyClass.add("widget-pull-to-refresh-refresh");
         } else {
-            this.bodyClass.remove("ptr-refresh");
+            this.bodyClass.remove("widget-pull-to-refresh-refresh");
         }
     }
 
     private doLoading() {
-        this.bodyClass.add("ptr-loading");
+        this.bodyClass.add("widget-pull-to-refresh-loading");
         if (!this.options.loadingFunction) {
             return this.doReset();
         }
@@ -231,16 +228,16 @@ export class WebPullToRefresh {
     }
 
     private doReset() {
-        this.bodyClass.remove("ptr-loading");
-        this.bodyClass.remove("ptr-refresh");
-        this.bodyClass.add("ptr-reset");
+        this.bodyClass.remove("widget-pull-to-refresh-loading");
+        this.bodyClass.remove("widget-pull-to-refresh-refresh");
+        this.bodyClass.add("widget-pull-to-refresh-reset");
 
         this.bodyEl.addEventListener("transitionend", this.bodyClassRemove, false);
     }
 
     private bodyClassRemove() {
         if (this.bodyClass) {
-            this.bodyClass.remove("ptr-reset");
+            this.bodyClass.remove("widget-pull-to-refresh-reset");
             this.bodyEl.removeEventListener("transitionend", this.bodyClassRemove, false);
         }
     }

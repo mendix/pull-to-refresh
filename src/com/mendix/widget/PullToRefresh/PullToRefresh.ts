@@ -1,25 +1,23 @@
 import * as dojoDeclare from "dojo/_base/declare";
+import * as dojoWindow from "dojo/_base/window";
+import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
 
-import { unmountComponentAtNode } from "react-dom";
-
-import { WebPullToRefresh } from "./components/WebPullToRefresh";
+import { PullToRefresh } from "./handlers/PullToRefresh";
 import "./ui/PullToRefresh.css";
 
-class PullToRefresh extends WidgetBase {
+class PullToRefreshWrapper extends WidgetBase {
 
     private contextObject: mendix.lib.MxObject;
 
     postCreate() {
-        // TODO use react when interacting with the dom !!
-        const contentNode = document.getElementById("content");
-        const wrapper = document.createElement("div");
-        wrapper.id = "ptr";
-        wrapper.innerHTML = `<span class="glyphicon glyphicon-repeat pull-to-refresh"></span>`;
-        document.body.insertBefore(wrapper, contentNode);
+        domConstruct.create("div", {
+            id: "widget-pull-to-refresh" ,
+            innerHTML: `<span class="glyphicon glyphicon-repeat pull-to-refresh"></span>`
+        }, dojoWindow.body(), "first");
     }
 
-    update(contextObject: mendix.lib.MxObject, callback?: Function) {
+    update(contextObject: mendix.lib.MxObject, callback?: () => void ) {
         this.contextObject = contextObject;
         this.updateRendering();
 
@@ -28,15 +26,9 @@ class PullToRefresh extends WidgetBase {
         }
     }
 
-    uninitialize(): boolean {
-        unmountComponentAtNode(this.domNode);
-
-        return true;
-    }
-
     private updateRendering() {
-        (new WebPullToRefresh()).init({
-            bodyEl: document.body,
+        (new PullToRefresh()).init({
+            bodyEl: dojoWindow.body(),
             loadingFunction: this.refreshPage
         });
     }
@@ -58,4 +50,4 @@ dojoDeclare("com.mendix.widget.PullToRefresh.PullToRefresh", [ WidgetBase ], fun
         }
     }
     return result;
-}(PullToRefresh));
+}(PullToRefreshWrapper));

@@ -1,4 +1,4 @@
-#ptr {
+#widget-pull-to-refresh {
     position: absolute;
     top: -40px;
     left: 0;
@@ -8,7 +8,7 @@
     height: auto;
 }
 
-#ptr .pull-to-refresh {
+#widget-pull-to-refresh .pull-to-refresh {
     opacity: .6;
     font-size: 20px;
     width: auto;
@@ -32,7 +32,7 @@
     margin: 12px 0 0 5px;
     display: none;
 }
-.ptr-loading .loading {
+.widget-pull-to-refresh-loading .loading {
     display: block;
 }
 
@@ -45,12 +45,12 @@
     -webkit-transform: scale(0.3);
     transform: scale(0.3);
     border-radius: 50%;
-    -webkit-animation: ptr-loading 0.4s infinite alternate;
-    animation: ptr-loading 0.4s infinite alternate;
+    -webkit-animation: widget-pull-to-refresh-loading 0.4s infinite alternate;
+    animation: widget-pull-to-refresh-loading 0.4s infinite alternate;
 }
 
 
-@-webkit-keyframes ptr-loading {
+@-webkit-keyframes widget-pull-to-refresh-loading {
     0% {
         -webkit-transform: translateY(0) scale(0.3);
         transform: translateY(0) scale(0.3);
@@ -65,7 +65,7 @@
     }
 }
 
-@keyframes ptr-loading {
+@keyframes widget-pull-to-refresh-loading {
     0% {
         -webkit-transform: translateY(0) scale(0.3);
         transform: translateY(0) scale(0.3);
@@ -80,13 +80,12 @@
     }
 }
 
-.ptr-loading #content, .ptr-reset #content,
-.ptr-loading #ptr, .ptr-reset #ptr {
+.widget-pull-to-refresh-loading #content, .widget-pull-to-refresh-reset #content,
+.widget-pull-to-refresh-loading #widget-pull-to-refresh, .widget-pull-to-refresh-reset #widget-pull-to-refresh {
     transition: all .25s ease;
 }
 
-.ptr-reset #content {
+.widget-pull-to-refresh-reset #content {
     -webkit-transform: translate3d( 0, 0, 0 );
     transform: translate3d( 0, 0, 0 );
 }
-
