@@ -1,15 +1,18 @@
+import { RegisterEvents } from "./RegisterEvents";
+
 interface PullToRefreshOptions {
-    contentEl?: HTMLElement | null;
-    ptrEl: HTMLElement | null;
-    bodyEl?: HTMLElement;
+    contentElement?: HTMLElement | null;
+    pullElement: HTMLElement | null;
     distanceToRefresh: number;
     loadingFunction: Function;
     resistance: number;
+    offsetHeight?: number;
 }
 
 export class PullToRefresh {
     private options: PullToRefreshOptions;
-    private bodyEl: HTMLElement;
+    private bodyElement: HTMLElement;
+    private registerEvents: RegisterEvents;
     private pan = {
         distance: 0,
         enabled: false,
@@ -17,139 +20,40 @@ export class PullToRefresh {
     };
     private bodyClass: DOMTokenList;
 
-    private firstTouch: {
-        pageX: number,
-        pageY: number
-    } = { pageX: 0, pageY: 0 };
-
-    private lastTouch: {
-        pageX: number,
-        pageY: number
-    } = { pageX: 0, pageY: 0 };
-
-    private activeGesture: string | null = null;
-
     constructor() {
         this.HandlePanDown = this.HandlePanDown.bind(this);
         this.HandlePanEnd = this.HandlePanEnd.bind(this);
         this.HandlePanUp = this.HandlePanUp.bind(this);
-
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleTouchMove = this.handleTouchMove.bind(this);
-        this.handleTouchEnd = this.handleTouchEnd.bind(this);
     }
 
-    init(params: { bodyEl: HTMLElement, loadingFunction: Function, resistance?: number }) {
-        window.document.addEventListener("touchstart", this.handleTouchStart, { passive: true } as any);
-        window.document.addEventListener("touchmove", this.handleTouchMove, { passive: true } as any);
-        window.document.addEventListener("touchend", this.handleTouchEnd);
-        window.document.addEventListener("touchcancel", this.handleTouchEnd);
-
-        this.bodyEl = params.bodyEl;
-        this.bodyClass = this.bodyEl.classList;
+    init(params: { bodyElement: HTMLElement, loadingFunction: Function, resistance?: number }) {
+        this.registerEvents = new RegisterEvents(() => this.panStart());
+        this.bodyElement = params.bodyElement;
+        this.bodyClass = this.bodyElement.classList;
         this.options = {
-            bodyEl: params.bodyEl,
-            contentEl: document.getElementsByClassName("mx-page")[0] as any,
+            contentElement: document.getElementsByClassName("mx-page")[0] as HTMLElement,
             distanceToRefresh: 40,
             loadingFunction: params.loadingFunction,
-            ptrEl: document.getElementById("widget-pull-to-refresh"),
+            pullElement: document.getElementById("widget-pull-to-refresh"),
             resistance: 2.5
         };
-        if (!this.options.contentEl || !this.options.ptrEl) {
+        if (!this.options.contentElement || !this.options.pullElement) {
             return;
         }
 
-        this.bodyClass = this.bodyEl.classList;
+        this.bodyClass = this.bodyElement.classList;
 
-        this.options.contentEl.addEventListener("panup", this.HandlePanUp);
-        this.options.contentEl.addEventListener("pandown", this.HandlePanDown);
-        this.options.contentEl.addEventListener("pandownend", this.HandlePanEnd);
+        this.options.contentElement.addEventListener("panup", this.HandlePanUp);
+        this.options.contentElement.addEventListener("pandown", this.HandlePanDown);
+        this.options.contentElement.addEventListener("pandownend", this.HandlePanEnd);
     }
 
-    private handleTouchStart(e: any) {
-        if (e.touches.length !== 1) {
-            return;
-        }
-        this.firstTouch = {
-            pageX: e.touches[0].pageX,
-            pageY: e.touches[0].pageY
-        };
-        this.panStart();
-    }
-
-    private handleTouchMove(e: any) {
-        const touch = e.touches[0];
-        this.lastTouch = {
-            pageX: touch.pageX,
-            pageY: touch.pageY
-        };
-
-        if (this.activeGesture === null && this.firstTouch) {
-            this.activeGesture = this.detectGesture();
-        }
-
-        if (this.activeGesture) {
-            this.fireEvent(e.type, e.target);
-        }
-    }
-
-    private handleTouchEnd(e: Event): void {
-        if (this.activeGesture) {
-            this.fireEvent(e.type, e.target);
-        }
-
-        this.activeGesture = null;
-        this.firstTouch = { pageX: 0, pageY: 0 };
-    }
-
-    private detectGesture() {
-        const deltaX = Math.abs(this.lastTouch.pageX - this.firstTouch.pageX);
-        const deltaY = Math.abs(this.lastTouch.pageY - this.firstTouch.pageY);
-
-        if (deltaY <= 40 && deltaX > 40) {
-            return "horizontal";
-        }
-
-        if (deltaX <= 40 && deltaY > 40) {
-            return "vertical";
-        }
-
-        return null;
-    }
-
-    private fireEvent(sourceEventType: any, target: any) {
-        const direction = this.activeGesture === "horizontal"
-            ? this.lastTouch.pageX > this.firstTouch.pageX ? "right" : "left"
-            : this.lastTouch.pageY > this.firstTouch.pageY ? "down" : "up";
-
-        let eventType = "";
-        if (sourceEventType === "touchend") {
-            eventType = "end";
-        } else if (sourceEventType === "touchcancel") {
-            eventType = "cancel";
-        }
-
-        const eventName = "pan" + direction + eventType;
-        const event = new CustomEvent(eventName, {
-            bubbles: true,
-            detail: {
-                originPageX: this.firstTouch.pageX,
-                originPageY: this.firstTouch.pageY,
-                pageX: this.lastTouch.pageX,
-                pageY: this.lastTouch.pageY
-            }
-        });
-
-        target.dispatchEvent(event);
-    }
-
-
-    private HandlePanUp(e: any) {
+    private HandlePanUp(e: TouchEvent) {
         e.preventDefault();
         if (!this.pan.enabled || this.pan.distance === 0) {
             return;
         }
-        const eventDistance = this.lastTouch.pageY - this.firstTouch.pageY;
+        const eventDistance = this.registerEvents.lastTouch.pageY - this.registerEvents.firstTouch.pageY;
         if (this.pan.distance < eventDistance / this.options.resistance) {
             this.pan.distance = 0;
         } else {
@@ -160,29 +64,27 @@ export class PullToRefresh {
         this.setBodyClass();
     }
 
-    private HandlePanDown(event: Event) {
+    private HandlePanDown(event: TouchEvent) {
         event.preventDefault();
         event.stopImmediatePropagation();
         if (!this.pan.enabled) {
             return;
         }
-        const eventDistance = this.lastTouch.pageY - this.firstTouch.pageY;
+        const eventDistance = this.registerEvents.lastTouch.pageY - this.registerEvents.firstTouch.pageY;
         this.pan.distance = eventDistance / this.options.resistance;
 
         this.setContentPan();
         this.setBodyClass();
     }
 
-    private HandlePanEnd(event: Event) {
-        event.preventDefault();
+    private HandlePanEnd() {
         if (!this.pan.enabled) {
             return;
         }
-        // TODO: validation so if contentID or ptrID elements are missing from the document
-        if (this.options.contentEl && this.options.ptrEl) {
-            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "";
+        if (this.options.pullElement) {
+            this.options.pullElement.style.transform = this.options.pullElement.style.webkitTransform = "";
         }
-        if (this.bodyEl.classList.contains("widget-pull-to-refresh-refresh")) {
+        if (this.bodyElement.classList.contains("widget-pull-to-refresh-refresh")) {
             this.doLoading();
         } else {
             this.doReset();
@@ -193,17 +95,18 @@ export class PullToRefresh {
     }
 
     private panStart() {
-        this.pan.startingPositionY = this.bodyEl.scrollTop;
+        this.pan.startingPositionY = this.bodyElement.scrollTop;
 
         if (this.pan.startingPositionY === 0) {
             this.pan.enabled = true;
+            this.options.offsetHeight = this.options.pullElement ? this.options.pullElement.offsetHeight : 0;
         }
     }
 
     private setContentPan() {
-        if (this.options.contentEl && this.options.ptrEl) {
-            this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, " +
-                (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
+        if (this.options.contentElement && this.options.pullElement) {
+            this.options.pullElement.style.transform = this.options.pullElement.style.webkitTransform =
+                "translate3d( 0, " + (this.pan.distance - this.options.offsetHeight) + "px, 0 )";
 
         }
     }
@@ -232,13 +135,13 @@ export class PullToRefresh {
         this.bodyClass.remove("widget-pull-to-refresh-refresh");
         this.bodyClass.add("widget-pull-to-refresh-reset");
 
-        this.bodyEl.addEventListener("transitionend", this.bodyClassRemove, false);
+        this.bodyElement.addEventListener("transitionend", this.bodyClassRemove, false);
     }
 
     private bodyClassRemove() {
         if (this.bodyClass) {
             this.bodyClass.remove("widget-pull-to-refresh-reset");
-            this.bodyEl.removeEventListener("transitionend", this.bodyClassRemove, false);
+            this.bodyElement.removeEventListener("transitionend", this.bodyClassRemove, false);
         }
     }
 }

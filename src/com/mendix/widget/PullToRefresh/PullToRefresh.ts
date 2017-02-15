@@ -28,7 +28,7 @@ class PullToRefreshWrapper extends WidgetBase {
 
     private updateRendering() {
         (new PullToRefresh()).init({
-            bodyEl: dojoWindow.body(),
+            bodyElement: dojoWindow.body(),
             loadingFunction: this.refreshPage
         });
     }
