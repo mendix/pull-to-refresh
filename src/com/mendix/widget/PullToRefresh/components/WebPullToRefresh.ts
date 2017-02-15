@@ -180,7 +180,7 @@ export class WebPullToRefresh {
         }
         // TODO: validation so if contentID or ptrID elements are missing from the document
         if (this.options.contentEl && this.options.ptrEl) {
-            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "";
+            // this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "";
             this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "";
         }
         if (this.bodyEl.classList.contains("ptr-refresh")) {
@@ -203,8 +203,8 @@ export class WebPullToRefresh {
 
     private setContentPan() {
         if (this.options.contentEl && this.options.ptrEl) {
-            this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, " +
-                this.pan.distance + "px, 0 )";
+            // this.options.contentEl.style.transform = this.options.contentEl.style.webkitTransform = "translate3d( 0, " +
+            //     this.pan.distance + "px, 0 )";
             this.options.ptrEl.style.transform = this.options.ptrEl.style.webkitTransform = "translate3d( 0, " +
                 (this.pan.distance - this.options.ptrEl.offsetHeight) + "px, 0 )";
 

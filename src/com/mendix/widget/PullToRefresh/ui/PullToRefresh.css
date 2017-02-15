@@ -1,16 +1,11 @@
 #ptr {
     position: absolute;
-    top: 0;
+    top: -40px;
     left: 0;
     width: 100%;
     z-index: 10;
     text-align: center;
     height: auto;
-    visibility: hidden;
-}
-
-.show-loading {
-    visibility: visible;
 }
 
 #ptr .pull-to-refresh {
@@ -19,7 +14,7 @@
     width: auto;
     height: auto;
     animation-name: rotate; 
-    animation-duration: 1s; 
+    animation-duration: 2s; 
     animation-iteration-count: infinite;
     animation-timing-function: linear;
     margin-top: 5px;
@@ -95,7 +90,3 @@
     transform: translate3d( 0, 0, 0 );
 }
 
-.ptr-loading #content {
-    -webkit-transform: translate3d( 0, 50px, 0 );
-    transform: translate3d( 0, 50px, 0 );
-}

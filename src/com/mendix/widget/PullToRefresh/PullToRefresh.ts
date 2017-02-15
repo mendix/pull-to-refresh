@@ -11,11 +11,11 @@ class PullToRefresh extends WidgetBase {
     private contextObject: mendix.lib.MxObject;
 
     postCreate() {
+        // TODO use react when interacting with the dom !!
         const contentNode = document.getElementById("content");
         const wrapper = document.createElement("div");
         wrapper.id = "ptr";
-        wrapper.innerHTML = `<span class="glyphicon glyphicon-repeat pull-to-refresh"></span>
-            <div class="loading"><span id="l1"></span><span id="l2"></span><span id="l3"></span></div>`;
+        wrapper.innerHTML = `<span class="glyphicon glyphicon-repeat pull-to-refresh"></span>`;
         document.body.insertBefore(wrapper, contentNode);
     }
 
