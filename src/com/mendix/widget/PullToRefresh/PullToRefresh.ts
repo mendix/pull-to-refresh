@@ -1,5 +1,6 @@
 import * as dojoDeclare from "dojo/_base/declare";
 import * as dojoWindow from "dojo/_base/window";
+import * as dojoDom from "dojo/dom";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
 
@@ -11,10 +12,13 @@ class PullToRefreshWrapper extends WidgetBase {
     private contextObject: mendix.lib.MxObject;
 
     postCreate() {
-        domConstruct.create("div", {
-            id: "widget-pull-to-refresh" ,
-            innerHTML: `<span class="glyphicon glyphicon-repeat pull-to-refresh"></span>`
-        }, dojoWindow.body(), "first");
+        if (!dojoDom.byId("widget-pull-to-refresh")) {
+            domConstruct.create("div", {
+                id: "widget-pull-to-refresh",
+                innerHTML: "<span class='glyphicon glyphicon-repeat pull-to-refresh'></span>" +
+                "<div id='widget-pull-to-refresh-text'>Pull to refresh</div>"
+            }, dojoWindow.body(), "first");
+        }
     }
 
     update(contextObject: mendix.lib.MxObject, callback?: () => void ) {

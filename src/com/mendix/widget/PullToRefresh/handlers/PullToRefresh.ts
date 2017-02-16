@@ -7,6 +7,7 @@ interface PullToRefreshOptions {
     loadingFunction: Function;
     resistance: number;
     offsetHeight?: number;
+    pullTextElement?: HTMLElement | null;
 }
 
 export class PullToRefresh {
@@ -27,14 +28,15 @@ export class PullToRefresh {
     }
 
     init(params: { bodyElement: HTMLElement, loadingFunction: Function, resistance?: number }) {
-        this.registerEvents = new RegisterEvents(() => this.panStart());
+        this.registerEvents = new RegisterEvents();
         this.bodyElement = params.bodyElement;
         this.bodyClass = this.bodyElement.classList;
         this.options = {
             contentElement: document.getElementsByClassName("mx-page")[0] as HTMLElement,
-            distanceToRefresh: 40,
+            distanceToRefresh: 70,
             loadingFunction: params.loadingFunction,
             pullElement: document.getElementById("widget-pull-to-refresh"),
+            pullTextElement: document.getElementById("widget-pull-to-refresh-text"),
             resistance: 2.5
         };
         if (!this.options.contentElement || !this.options.pullElement) {
@@ -46,14 +48,16 @@ export class PullToRefresh {
         this.options.contentElement.addEventListener("panup", this.HandlePanUp);
         this.options.contentElement.addEventListener("pandown", this.HandlePanDown);
         this.options.contentElement.addEventListener("pandownend", this.HandlePanEnd);
+
+        this.panStart();
     }
 
-    private HandlePanUp(e: TouchEvent) {
+    private HandlePanUp(e: CustomEvent) {
         e.preventDefault();
         if (!this.pan.enabled || this.pan.distance === 0) {
             return;
         }
-        const eventDistance = this.registerEvents.lastTouch.pageY - this.registerEvents.firstTouch.pageY;
+        const eventDistance = this.registerEvents.touchEndY - this.registerEvents.touchStart.pageY;
         if (this.pan.distance < eventDistance / this.options.resistance) {
             this.pan.distance = 0;
         } else {
@@ -70,7 +74,7 @@ export class PullToRefresh {
         if (!this.pan.enabled) {
             return;
         }
-        const eventDistance = this.registerEvents.lastTouch.pageY - this.registerEvents.firstTouch.pageY;
+        const eventDistance = this.registerEvents.touchEndY - this.registerEvents.touchStart.pageY;
         this.pan.distance = eventDistance / this.options.resistance;
 
         this.setContentPan();
@@ -106,8 +110,12 @@ export class PullToRefresh {
     private setContentPan() {
         if (this.options.contentElement && this.options.pullElement) {
             this.options.pullElement.style.transform = this.options.pullElement.style.webkitTransform =
-                "translate3d( 0, " + (this.pan.distance - this.options.offsetHeight) + "px, 0 )";
-
+                "translate3d( 0, " + this.pan.distance + "px, 0 )";
+        }
+        if (this.options.pullTextElement) {
+            this.options.pullTextElement.innerHTML = this.pan.distance > this.options.distanceToRefresh
+                ? "Release to refresh"
+                : "Pull to refresh";
         }
     }
 
@@ -134,14 +142,18 @@ export class PullToRefresh {
         this.bodyClass.remove("widget-pull-to-refresh-loading");
         this.bodyClass.remove("widget-pull-to-refresh-refresh");
         this.bodyClass.add("widget-pull-to-refresh-reset");
-
-        this.bodyElement.addEventListener("transitionend", this.bodyClassRemove, false);
-    }
-
-    private bodyClassRemove() {
-        if (this.bodyClass) {
-            this.bodyClass.remove("widget-pull-to-refresh-reset");
-            this.bodyElement.removeEventListener("transitionend", this.bodyClassRemove, false);
+        if (this.options.contentElement) {
+            this.options.contentElement.removeEventListener("panup", this.HandlePanUp);
+            this.options.contentElement.removeEventListener("pandown", this.HandlePanDown);
+            this.options.contentElement.removeEventListener("pandownend", this.HandlePanEnd);
         }
-    }
+    // this.bodyElement.addEventListener("transitionend", this.bodyClassRemove, false);
+}
+
+    // private bodyClassRemove() {
+    //     if (this.bodyClass) {
+    //         this.bodyClass.remove("widget-pull-to-refresh-reset");
+    //         this.bodyElement.removeEventListener("transitionend", this.bodyClassRemove, false);
+    //     }
+    // }
 }
