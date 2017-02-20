@@ -8,6 +8,10 @@ Swipe or pull down to reload a page
 Mendix 6
 
 ## Demo project
+https://pulltorefresh.mxapps.io
+
+##Issues
+https://github.com/mendixlabs/pull-to-refresh/issues
 
 ## Disclaimer
 Status: In development
