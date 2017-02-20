@@ -6,6 +6,7 @@
     z-index: 10;
     text-align: center;
     height: auto;
+    touch-action: pan-y pinch-zoom;
 }
 
 #widget-pull-to-refresh .pull-to-refresh {

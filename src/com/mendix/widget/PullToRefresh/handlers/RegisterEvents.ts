@@ -15,6 +15,7 @@ export class RegisterEvents {
     }
 
     private handleTouchStart(event: TouchEvent) {
+        event.preventDefault();
         if (event.touches.length !== 1) {
             return;
         }
@@ -22,11 +23,16 @@ export class RegisterEvents {
     }
 
     private handleTouchMove(event: TouchEvent) {
-        event.preventDefault();
         this.touchEndY = event.touches[0].pageY;
 
         if (!this.verticalGestureEnabled) {
             this.verticalGestureEnabled = this.verticalGesture(event.touches[0]);
+        }
+        if (!this.verticalGestureEnabled) {
+            if (!window.scrollY && this.touchStart.pageY < this.touchEndY ) {
+                event.preventDefault();
+            }
+            return;
         }
         if (this.verticalGestureEnabled) {
             this.fireEvent(event);
@@ -34,6 +40,8 @@ export class RegisterEvents {
     }
 
     private handleTouchEnd(event: TouchEvent) {
+        // https://developers.google.com/web/updates/2017/01/scrolling-intervention
+        event.preventDefault();
         if (this.verticalGestureEnabled) {
             this.fireEvent(event);
             this.verticalGestureEnabled = false;

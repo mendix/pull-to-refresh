@@ -69,9 +69,10 @@ export class PullToRefresh {
     }
 
     private HandlePanDown(event: TouchEvent) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
+        // event.preventDefault();
+        // event.stopImmediatePropagation();
         if (!this.pan.enabled) {
+            console.log(event);
             return;
         }
         const eventDistance = this.registerEvents.touchEndY - this.registerEvents.touchStart.pageY;
@@ -93,9 +94,6 @@ export class PullToRefresh {
         } else {
             this.doReset();
         }
-
-        this.pan.distance = 0;
-        this.pan.enabled = false;
     }
 
     private panStart() {
@@ -121,39 +119,37 @@ export class PullToRefresh {
 
     private setBodyClass() {
         if (this.pan.distance > this.options.distanceToRefresh) {
-            this.bodyClass.add("widget-pull-to-refresh-refresh");
+           this.bodyElement.classList.add("widget-pull-to-refresh-refresh");
         } else {
-            this.bodyClass.remove("widget-pull-to-refresh-refresh");
+            this.bodyElement.classList.remove("widget-pull-to-refresh-refresh");
         }
     }
 
     private doLoading() {
-        this.bodyClass.add("widget-pull-to-refresh-loading");
+        this.bodyElement.classList.add("widget-pull-to-refresh-loading");
         if (!this.options.loadingFunction) {
             return this.doReset();
         }
         setTimeout(() => {
-            const promise = this.options.loadingFunction();
-            promise.then(this.doReset);
+            mx.ui.reload();
+            this.doReset();
+            // const promise = this.options.loadingFunction();
+            // promise.then(this.doReset());
         }, 1000);
     }
 
     private doReset() {
-        this.bodyClass.remove("widget-pull-to-refresh-loading");
-        this.bodyClass.remove("widget-pull-to-refresh-refresh");
-        this.bodyClass.add("widget-pull-to-refresh-reset");
+        this.bodyElement.classList.remove("widget-pull-to-refresh-loading");
+        this.bodyElement.classList.remove("widget-pull-to-refresh-refresh");
+        // this.bodyClass.add("widget-pull-to-refresh-reset");
         if (this.options.contentElement) {
             this.options.contentElement.removeEventListener("panup", this.HandlePanUp);
             this.options.contentElement.removeEventListener("pandown", this.HandlePanDown);
             this.options.contentElement.removeEventListener("pandownend", this.HandlePanEnd);
         }
+        this.pan.distance = 0;
+        this.pan.enabled = false;
     // this.bodyElement.addEventListener("transitionend", this.bodyClassRemove, false);
 }
 
-    // private bodyClassRemove() {
-    //     if (this.bodyClass) {
-    //         this.bodyClass.remove("widget-pull-to-refresh-reset");
-    //         this.bodyElement.removeEventListener("transitionend", this.bodyClassRemove, false);
-    //     }
-    // }
 }
