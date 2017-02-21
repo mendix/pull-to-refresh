@@ -1,21 +1,20 @@
 export class RegisterEvents {
     touchStart = { pageX: 0, pageY: 0 };
     touchEndY = 0;
-    private verticalGestureEnabled: boolean;
+    private verticalGestureEnabled = false;
 
     constructor() {
         this.handleTouchStart = this.handleTouchStart.bind(this);
         this.handleTouchMove = this.handleTouchMove.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
 
-        window.document.addEventListener("touchstart", this.handleTouchStart);
-        window.document.addEventListener("touchmove", this.handleTouchMove);
-        window.document.addEventListener("touchend", this.handleTouchEnd);
-        window.document.addEventListener("touchcancel", this.handleTouchEnd);
+        (document.addEventListener as WhatWGAddEventListener)("touchstart", this.handleTouchStart, { passive: true });
+        (document.addEventListener as WhatWGAddEventListener)("touchmove", this.handleTouchMove, { passive: false });
+        (document.addEventListener as WhatWGAddEventListener)("touchend", this.handleTouchEnd, { passive: true });
+        (document.addEventListener as WhatWGAddEventListener)("touchcancel", this.handleTouchEnd, { passive: true });
     }
 
     private handleTouchStart(event: TouchEvent) {
-        event.preventDefault();
         if (event.touches.length !== 1) {
             return;
         }
@@ -24,15 +23,12 @@ export class RegisterEvents {
 
     private handleTouchMove(event: TouchEvent) {
         this.touchEndY = event.touches[0].pageY;
+        if (!window.scrollY && this.touchStart.pageY < this.touchEndY ) {
+                event.preventDefault();
+        }
 
         if (!this.verticalGestureEnabled) {
             this.verticalGestureEnabled = this.verticalGesture(event.touches[0]);
-        }
-        if (!this.verticalGestureEnabled) {
-            if (!window.scrollY && this.touchStart.pageY < this.touchEndY ) {
-                event.preventDefault();
-            }
-            return;
         }
         if (this.verticalGestureEnabled) {
             this.fireEvent(event);
@@ -40,8 +36,6 @@ export class RegisterEvents {
     }
 
     private handleTouchEnd(event: TouchEvent) {
-        // https://developers.google.com/web/updates/2017/01/scrolling-intervention
-        event.preventDefault();
         if (this.verticalGestureEnabled) {
             this.fireEvent(event);
             this.verticalGestureEnabled = false;

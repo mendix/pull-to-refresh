@@ -69,8 +69,6 @@ export class PullToRefresh {
     }
 
     private HandlePanDown(event: TouchEvent) {
-        // event.preventDefault();
-        // event.stopImmediatePropagation();
         if (!this.pan.enabled) {
             console.log(event);
             return;
@@ -87,7 +85,9 @@ export class PullToRefresh {
             return;
         }
         if (this.options.pullElement) {
-            this.options.pullElement.style.transform = this.options.pullElement.style.webkitTransform = "";
+            this.options.pullElement.style.transform = this.options.pullElement.style.webkitTransform =
+                "translate3d( 0, -40px, 0 )";
+            this.options.pullElement.style.top = "-40px";
         }
         if (this.bodyElement.classList.contains("widget-pull-to-refresh-refresh")) {
             this.doLoading();
@@ -133,15 +133,12 @@ export class PullToRefresh {
         setTimeout(() => {
             mx.ui.reload();
             this.doReset();
-            // const promise = this.options.loadingFunction();
-            // promise.then(this.doReset());
         }, 1000);
     }
 
     private doReset() {
         this.bodyElement.classList.remove("widget-pull-to-refresh-loading");
         this.bodyElement.classList.remove("widget-pull-to-refresh-refresh");
-        // this.bodyClass.add("widget-pull-to-refresh-reset");
         if (this.options.contentElement) {
             this.options.contentElement.removeEventListener("panup", this.HandlePanUp);
             this.options.contentElement.removeEventListener("pandown", this.HandlePanDown);
@@ -149,7 +146,5 @@ export class PullToRefresh {
         }
         this.pan.distance = 0;
         this.pan.enabled = false;
-    // this.bodyElement.addEventListener("transitionend", this.bodyClassRemove, false);
-}
-
+    }
 }

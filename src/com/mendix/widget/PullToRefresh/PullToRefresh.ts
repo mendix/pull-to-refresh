@@ -5,6 +5,7 @@ import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
 
 import { PullToRefresh } from "./handlers/PullToRefresh";
+
 import "./ui/PullToRefresh.css";
 
 class PullToRefreshWrapper extends WidgetBase {
@@ -33,14 +34,8 @@ class PullToRefreshWrapper extends WidgetBase {
     private updateRendering() {
         (new PullToRefresh()).init({
             bodyElement: dojoWindow.body(),
-            loadingFunction: this.refreshPage
+            loadingFunction: () => mx.ui.reload()
         });
-    }
-
-    private refreshPage() {
-        return (new Promise<string>(() => {
-            mx.ui.reload();
-        }));
     }
 
 }
