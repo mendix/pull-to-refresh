@@ -32,12 +32,10 @@
     color: rgba(0, 0, 0, 0.6);
     transition: transform .3s;
     font-size: 20px;
-
 }
 
 .ptr--release .ptr--icon {
     transform: rotate(180deg);
-
 }
 
 #widget-pull-to-refresh {
