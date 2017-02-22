@@ -4,6 +4,7 @@ import * as dojoDom from "dojo/dom";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
 import { PullToRefreshJS } from "./handlers/PullToRefreshJS";
+
 import "./ui/PullToRefresh.css";
 
 class PullToRefreshWrapper extends WidgetBase {
@@ -34,7 +35,7 @@ class PullToRefreshWrapper extends WidgetBase {
     }
 
     private updateRendering() {
-       this.destroyEvents =  new PullToRefreshJS().init({
+        new PullToRefreshJS().init({
             mainElement: dojoWindow.body() as HTMLElement,
             onRefresh: () => { mx.ui.reload(); },
             ptrElement: this.ptrElement
