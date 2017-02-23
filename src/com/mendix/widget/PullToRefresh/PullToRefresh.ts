@@ -9,11 +9,12 @@ import "./ui/PullToRefresh.css";
 
 class PullToRefreshWrapper extends WidgetBase {
 
-    private contextObject: mendix.lib.MxObject;
-    private ptrElement: HTMLElement;
+    private contextObject: mendix.lib.MxObject; // TODO: What's the purpose of this? Ditch
+    private ptrElement: HTMLElement; // TODO: rename to something clearer
 
     postCreate() {
         if (!dojoDom.byId("widget-pull-to-refresh")) {
+            // TODO: Ditch all this ptr stuff or other unclear abbreviations. Stick to convention
             this.ptrElement = domConstruct.create("div", {
                 class: "ptr--ptr",
                 id: "widget-pull-to-refresh",
@@ -21,10 +22,10 @@ class PullToRefreshWrapper extends WidgetBase {
                     <div class='ptr--icon'></div>
                     <div class='ptr--text'></div>
                 </div></div>`
-            }, dojoWindow.body(), "first");
+            }, dojoWindow.body(), "first"); // TODO: why not use document.body?
         }
     }
-
+    // TODO: Widget doesn't need context so u don't need this. Ditch it, move updateRendering to postCreate
     update(contextObject: mendix.lib.MxObject, callback?: () => void ) {
         this.contextObject = contextObject;
         this.updateRendering();
@@ -36,8 +37,8 @@ class PullToRefreshWrapper extends WidgetBase {
 
     private updateRendering() {
         new PullToRefreshJS().init({
-            mainElement: dojoWindow.body() as HTMLElement,
-            onRefresh: () => { mx.ui.reload(); },
+            mainElement: dojoWindow.body() as HTMLElement, // TODO: why not use document.body? In fact, do this in class constructor
+            onRefresh: () => { mx.ui.reload(); }, // TODO: Why do this here? Is it ever going to change? Put in class
             ptrElement: this.ptrElement
         });
     }
