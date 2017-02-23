@@ -1,7 +1,4 @@
 
-/* eslint-disable import/no-unresolved */
-import * as domConstruct from "dojo/dom-construct";
-
 interface SettingOptions {
     distThreshold: number;
     distMax: number;
@@ -44,7 +41,7 @@ export class PullToRefreshJS {
     init(params: { ptrElement: HTMLElement, onRefresh: () => void, mainElement: HTMLElement }) {
         this.settings = {
             distThreshold: 80,
-            distMax: 200,
+            distMax: 150,
             distReload: 50,
             mainElement: document.body,
             triggerElement: document.body,
@@ -163,9 +160,7 @@ export class PullToRefreshJS {
 
         if (this.dist > 0) {
             event.preventDefault();
-
             ptrElement.style[cssProp as any] = `${this.distResisted}px`;
-
             this.distResisted = resistanceFunction(this.dist / distThreshold)
                 * Math.min(distMax, this.dist);
 
