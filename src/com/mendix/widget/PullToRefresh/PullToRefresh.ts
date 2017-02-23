@@ -3,21 +3,23 @@ import * as dojoWindow from "dojo/_base/window";
 import * as dojoDom from "dojo/dom";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
-
-import { PullToRefresh } from "./handlers/PullToRefresh";
-
+import { PullToRefreshJS } from "./handlers/PullToRefreshJS";
 import "./ui/PullToRefresh.css";
 
 class PullToRefreshWrapper extends WidgetBase {
 
     private contextObject: mendix.lib.MxObject;
+    private ptrElement: HTMLElement;
 
     postCreate() {
         if (!dojoDom.byId("widget-pull-to-refresh")) {
-            domConstruct.create("div", {
+            this.ptrElement = domConstruct.create("div", {
+                class: "ptr--ptr",
                 id: "widget-pull-to-refresh",
-                innerHTML: "<span class='glyphicon glyphicon-repeat pull-to-refresh'></span>" +
-                "<div id='widget-pull-to-refresh-text'>Pull to refresh</div>"
+                innerHTML: `<div class='ptr--box'><div class='ptr--content'>
+                    <div class='ptr--icon'></div>
+                    <div class='ptr--text'></div>
+                </div></div>`
             }, dojoWindow.body(), "first");
         }
     }
@@ -32,12 +34,12 @@ class PullToRefreshWrapper extends WidgetBase {
     }
 
     private updateRendering() {
-        (new PullToRefresh()).init({
-            bodyElement: dojoWindow.body(),
-            loadingFunction: () => mx.ui.reload()
+       this.destroyEvents =  new PullToRefreshJS().init({
+            mainElement: dojoWindow.body() as HTMLElement,
+            onRefresh: () => { mx.ui.reload(); },
+            ptrElement: this.ptrElement
         });
     }
-
 }
 
 // tslint:disable : only-arrow-functions

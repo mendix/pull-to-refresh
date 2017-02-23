@@ -15,3 +15,21 @@ declare module "react-pull-to-refresh" {
     var pulltorefreshInstance: React.ComponentClass<PullToRefreshProps>;
     export = pulltorefreshInstance;
 }
+
+declare module "pulltorefreshjs" {
+    interface ptr {
+        init(...args: any[]): any
+    }
+    var ptr_: ptr;
+
+    export = ptr_;
+}
+
+declare module "PullToRefreshJS" {
+    interface ptr {
+        init(...args: any[]): any
+    }
+    var ptr_: ptr;
+
+    export = ptr_;
+}

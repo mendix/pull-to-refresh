@@ -1,92 +1,46 @@
-#widget-pull-to-refresh {
-    position: absolute;
-    top: -44px;
-    left: 0;
+.ptr--ptr {
+    pointer-events: none;
+    font-size: 0.85em;
+    font-weight: bold;
+    top: 0;
+    height: 0;
+    transition: height 0.3s, min-height 0.3s;
+    text-align: center;
     width: 100%;
-    z-index: 10;
-    text-align: center;
-    height: auto;
-    touch-action: pan-y pinch-zoom;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    align-content: stretch;
 }
 
-#widget-pull-to-refresh .pull-to-refresh {
-    opacity: .6;
+.ptr--box {
+    padding: 10px;
+    flex-basis: 100%;
+}
+
+.ptr--pull {
+    transition: none;
+}
+
+.ptr--text {
+    margin-top: .33em;
+    color: rgba(0, 0, 0, 1);
+    font-size: 14px;
+}
+
+.ptr--icon {
+    color: rgba(0, 0, 0, 0.6);
+    transition: transform .3s;
     font-size: 20px;
-    width: auto;
-    height: auto;
-    animation-name: rotate; 
-    animation-duration: 2s; 
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-    margin-top: 5px;
+
 }
 
-@keyframes rotate {
-    from {transform: rotate(0deg);}
-    to {transform: rotate(360deg);}
+.ptr--release .ptr--icon {
+    transform: rotate(180deg);
+
 }
 
-.loading {
-    display: inline-block;
-    text-align: center;
-    opacity: .4;
-    margin: 12px 0 0 5px;
-    display: none;
-}
-.widget-pull-to-refresh-loading .loading {
-    display: block;
-}
-
-.loading span {
-    display: inline-block;
-    vertical-align: middle;
-    width: 10px;
-    height: 10px;
-    margin-right: 3px;
-    -webkit-transform: scale(0.3);
-    transform: scale(0.3);
-    border-radius: 50%;
-    -webkit-animation: widget-pull-to-refresh-loading 0.4s infinite alternate;
-    animation: widget-pull-to-refresh-loading 0.4s infinite alternate;
-}
-
-
-@-webkit-keyframes widget-pull-to-refresh-loading {
-    0% {
-        -webkit-transform: translateY(0) scale(0.3);
-        transform: translateY(0) scale(0.3);
-        opacity: 0;
-    }
-
-    100% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
-        background-color: #fff;
-        opacity: 1;
-    }
-}
-
-@keyframes widget-pull-to-refresh-loading {
-    0% {
-        -webkit-transform: translateY(0) scale(0.3);
-        transform: translateY(0) scale(0.3);
-        opacity: 0;
-    }
-
-    100% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
-        background-color: #fff;
-        opacity: 1;
-    }
-}
-
-.widget-pull-to-refresh-loading #content, .widget-pull-to-refresh-reset #content,
-.widget-pull-to-refresh-loading #widget-pull-to-refresh, .widget-pull-to-refresh-reset #widget-pull-to-refresh {
-    transition: all .25s ease;
-}
-
-.widget-pull-to-refresh-reset #content {
-    -webkit-transform: translate3d( 0, 0, 0 );
-    transform: translate3d( 0, 0, 0 );
+#widget-pull-to-refresh {
+    z-index: 10;
+    position: absolute
 }
