@@ -25,9 +25,9 @@ module.exports = {
         ]
     },
     devtool: "source-map",
-    externals: [ 
-        "mxui/widget/_WidgetBase", "dojo/_base/declare", "dojo/dom-construct", "dojo/_base/window", 
-        "dojo/dom" ],
+    externals: [
+        "mxui/widget/_WidgetBase", "dojo/_base/declare", "dojo/dom-construct", "dojo/dom", "dojo/dom-class",
+        "dojo/dom-style" ],
     plugins: [
         new CopyWebpackPlugin([
             { from: "src/**/*.js" },

@@ -1,46 +1,39 @@
 import * as dojoDeclare from "dojo/_base/declare";
-import * as dojoWindow from "dojo/_base/window";
 import * as dojoDom from "dojo/dom";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
-import { PullToRefreshJS } from "./handlers/PullToRefreshJS";
+import { PullToRefresh } from "./handlers/PullToRefresh";
 
 import "./ui/PullToRefresh.css";
 
 class PullToRefreshWrapper extends WidgetBase {
-
-    private contextObject: mendix.lib.MxObject; // TODO: What's the purpose of this? Ditch
-    private ptrElement: HTMLElement; // TODO: rename to something clearer
+    private pullToRefreshElement: HTMLElement;
+    private pullToRefresh: PullToRefresh;
 
     postCreate() {
         if (!dojoDom.byId("widget-pull-to-refresh")) {
-            // TODO: Ditch all this ptr stuff or other unclear abbreviations. Stick to convention
-            this.ptrElement = domConstruct.create("div", {
-                class: "ptr--ptr",
+            this.pullToRefreshElement = domConstruct.create("div", {
+                class: "pull-to-refresh-pull-to-refresh",
                 id: "widget-pull-to-refresh",
-                innerHTML: `<div class='ptr--box'><div class='ptr--content'>
-                    <div class='ptr--icon'></div>
-                    <div class='ptr--text'></div>
+                innerHTML: `<div class='pull-to-refresh-box'><div class='pull-to-refresh-content'>
+                    <div class='pull-to-refresh-icon'></div>
+                    <div class='pull-to-refresh-text'></div>
                 </div></div>`
-            }, dojoWindow.body(), "first"); // TODO: why not use document.body?
+            }, document.body, "first");
         }
-    }
-    // TODO: Widget doesn't need context so u don't need this. Ditch it, move updateRendering to postCreate
-    update(contextObject: mendix.lib.MxObject, callback?: () => void ) {
-        this.contextObject = contextObject;
-        this.updateRendering();
 
-        if (callback) {
-            callback();
-        }
-    }
-
-    private updateRendering() {
-        new PullToRefreshJS().init({
-            mainElement: dojoWindow.body() as HTMLElement, // TODO: why not use document.body? In fact, do this in class constructor
-            onRefresh: () => { mx.ui.reload(); }, // TODO: Why do this here? Is it ever going to change? Put in class
-            ptrElement: this.ptrElement
+        this.pullToRefresh = new PullToRefresh({
+            mainElement: document.body,
+            pullToRefreshElement: this.pullToRefreshElement
         });
+
+        this.pullToRefresh.setupEvents();
+    }
+
+    uninitialize() {
+        this.pullToRefresh.removeEvents();
+
+        return true;
     }
 }
 

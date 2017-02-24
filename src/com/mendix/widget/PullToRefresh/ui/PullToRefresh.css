@@ -1,4 +1,4 @@
-.ptr--ptr {
+.pull-to-refresh-pull-to-refresh {
     pointer-events: none;
     font-size: 0.85em;
     font-weight: bold;
@@ -13,28 +13,28 @@
     align-content: stretch;
 }
 
-.ptr--box {
+.pull-to-refresh-box {
     padding: 10px;
     flex-basis: 100%;
 }
 
-.ptr--pull {
+.pull-to-refresh-pull {
     transition: none;
 }
 
-.ptr--text {
+.pull-to-refresh-text {
     margin-top: .33em;
     color: rgba(0, 0, 0, 1);
     font-size: 14px;
 }
 
-.ptr--icon {
+.pull-to-refresh-icon {
     color: rgba(0, 0, 0, 0.6);
     transition: transform .3s;
     font-size: 20px;
 }
 
-.ptr--release .ptr--icon {
+.pull-to-refresh-release .pull-to-refresh-icon {
     transform: rotate(180deg);
 }
 

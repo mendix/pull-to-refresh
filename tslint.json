@@ -79,6 +79,7 @@
         "trailing-comma": [ true, { "multiline": "never", "singleline": "never" } ],
         "member-access": false,
         "no-unused-variable": [ true, "react" ],
-        "arrow-parens": false
+        "arrow-parens": false,
+        "curly": false
     }
 }
