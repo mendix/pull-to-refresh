@@ -11,7 +11,8 @@ class PullToRefreshWrapper extends WidgetBase {
     private pullToRefresh: PullToRefresh;
 
     postCreate() {
-        if (!dojoDom.byId("widget-pull-to-refresh")) {
+        this.pullToRefreshElement = dojoDom.byId("widget-pull-to-refresh");
+        if (!this.pullToRefreshElement) {
             this.pullToRefreshElement = domConstruct.create("div", {
                 class: "pull-to-refresh-pull-to-refresh",
                 id: "widget-pull-to-refresh",
