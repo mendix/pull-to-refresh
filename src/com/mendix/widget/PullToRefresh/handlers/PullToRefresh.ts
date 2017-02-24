@@ -26,7 +26,7 @@ export class PullToRefresh {
     private pullMoveY: number;
     private distance = 0;
     private distanceResisted = 0;
-    private state = "pending";
+    private state: "pending" | "pulling" | "releasing" | "refreshing";
     private setup: boolean;
     private enable: boolean;
     private timeout: number;
@@ -55,6 +55,7 @@ export class PullToRefresh {
             thresholdDistance: 80,
             triggerElement: params.mainElement
         };
+        this.state = "pending";
     }
 
     setupEvents() {
