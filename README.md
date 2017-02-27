@@ -1,8 +1,8 @@
 # pull-to-refresh
-Swipe or pull down to reload a page
+Pull down to reload a page
 
 ## Features
-* Pull down to refresh a page
+* Pull down page until the text 'release to refresh' appears in order to refresh the page
 
 ## Dependencies
 Mendix 6
