@@ -1,5 +1,5 @@
+import * as Promise from "core-js/fn/promise";
 import * as domClass from "dojo/dom-class";
-import * as domStyle from "dojo/dom-style";
 
 interface Settings {
     thresholdDistance: number;
@@ -11,6 +11,7 @@ interface Settings {
     classPrefix: string;
     cssProp: string;
     iconArrow: string;
+    iconElement: Element | null;
     iconRefreshing: string;
     pullToRefreshText: string;
     releaseToRefreshText: string;
@@ -18,6 +19,17 @@ interface Settings {
     refreshTimeout: number;
     onRefresh: ((value: Function) => Promise<void>) | ((value: Function) => void);
     resistanceFunction: (value: number) => number;
+    textElement: Element | null;
+}
+type State = "pending" | "pulling" | "releaseToRefresh" | "refreshing" | "scrolling";
+
+interface Params {
+    onRefresh: () => void;
+    mainElement: HTMLElement;
+    pullToRefreshElement: HTMLElement;
+    pullToRefreshText?: string;
+    releaseToRefreshText?: string;
+    refreshText?: string;
 }
 
 export class PullToRefresh {
@@ -29,36 +41,36 @@ export class PullToRefresh {
     private pullMoveY: number;
     private distance = 0;
     private distanceResisted = 0;
-    private state: "pending" | "pulling" | "releasing" | "refreshing" | "scrolling";
-    private setup: boolean;
+    private state: State;
     private enable: boolean;
     private timeout: number;
-    private updating: boolean;
     private lastDistance = 0;
 
-    constructor(params: { pullToRefreshElement: HTMLElement, mainElement: HTMLElement }) {
+    constructor(params: Params) {
         this.onTouchStart = this.onTouchStart.bind(this);
         this.onTouchMove = this.onTouchMove.bind(this);
         this.onTouchEnd = this.onTouchEnd.bind(this);
-        this.onReset = this.onReset.bind(this);
-
+        this.resetDom = this.resetDom.bind(this);
+        const classPrefix = "pull-to-refresh-";
         this.settings = {
-            classPrefix: "pull-to-refresh-",
+            classPrefix,
             cssProp: "min-height",
             iconArrow: "&#8675;",
             iconRefreshing: "&hellip;",
             mainElement: params.mainElement,
             maximumDistance: 150,
-            onRefresh: () => { mx.ui.reload(); },
+            onRefresh: params.onRefresh,
             pullToRefreshElement: params.pullToRefreshElement,
-            pullToRefreshText: "Pull to refresh",
-            refreshText: "Refreshing",
+            pullToRefreshText: params.pullToRefreshText || "",
+            refreshText: params.refreshText || "",
             refreshTimeout: 500,
-            releaseToRefreshText: "Release to refresh",
+            releaseToRefreshText: params.releaseToRefreshText || "",
             reloadDistance: 50,
             resistanceFunction: (distance) => Math.min(1, distance / 2.5),
             thresholdDistance: 80,
-            triggerElement: params.mainElement
+            triggerElement: params.mainElement,
+            iconElement: params.pullToRefreshElement.querySelector(`.${classPrefix}icon`),
+            textElement: params.pullToRefreshElement.querySelector(`.${classPrefix}text`)
         };
         this.state = "pending";
         this.pullStart = { screenX: 0, screenY: 0 };
@@ -68,51 +80,52 @@ export class PullToRefresh {
         window.addEventListener("touchstart", this.onTouchStart);
         window.addEventListener("touchend", this.onTouchEnd);
         (window.addEventListener as WhatWGAddEventListener)("touchmove", this.onTouchMove, { passive: false });
-        this.setup = true;
     }
 
     removeEvents() {
         window.removeEventListener("touchstart", this.onTouchStart);
         window.removeEventListener("touchend", this.onTouchEnd);
         (window.removeEventListener as WhatWGAddEventListener)("touchmove", this.onTouchMove, { passive: false });
-        this.setup = false;
     }
 
-    private update() {
-        const {
-            classPrefix,
-            pullToRefreshElement,
-            iconArrow,
-            iconRefreshing,
-            refreshText,
-            pullToRefreshText,
-            releaseToRefreshText
-        } = this.settings;
+    private update(nextState: State) {
+        const { iconElement, textElement, pullToRefreshElement, classPrefix, iconRefreshing, iconArrow,
+            refreshText, pullToRefreshText, releaseToRefreshText, reloadDistance } = this.settings;
 
-        const iconElement = pullToRefreshElement.querySelector(`.${classPrefix}icon`);
-        const textElement = pullToRefreshElement.querySelector(`.${classPrefix}text`);
-        if (iconElement && textElement) {
-            if (this.state === "refreshing") {
+        if (iconElement && textElement && nextState !== this.state ) {
+            if (nextState === "refreshing") {
+                pullToRefreshElement.style.minHeight = `${reloadDistance}px`;
+                domClass.replace(pullToRefreshElement.id, `${classPrefix}refresh`, `${classPrefix}release`);
                 iconElement.innerHTML = iconRefreshing;
                 textElement.innerHTML = refreshText;
             } else {
                 iconElement.innerHTML = iconArrow;
             }
-            if (this.state === "releasing") {
+
+            if (nextState === "releaseToRefresh") {
+                domClass.add(pullToRefreshElement.id, `${classPrefix}release`);
                 textElement.innerHTML = releaseToRefreshText;
-            }
-            if (this.state === "pulling" || this.state === "pending") {
+            } else if (nextState === "pulling" || nextState === "pending") {
                 textElement.innerHTML = pullToRefreshText;
             }
+            if (nextState === "pulling") {
+                domClass.replace(pullToRefreshElement.id, `${classPrefix}pull`, `${classPrefix}release`);
+            }
         }
+        this.state = nextState;
     }
 
-    private onReset() {
-        const { cssProp, pullToRefreshElement, classPrefix } = this.settings;
-        domClass.remove(pullToRefreshElement.id, `${classPrefix}refresh`);
-        domStyle.set(pullToRefreshElement, cssProp, "0px");
-
+    private resetDom() {
+        const { pullToRefreshElement, classPrefix } = this.settings;
+        domClass.remove(pullToRefreshElement.id, `${classPrefix}release ${classPrefix}pull ${classPrefix}refresh`);
+        pullToRefreshElement.style.minHeight = "0px";
+        this.pullStart = { screenY: 0, screenX: 0 };
+        this.lastDistance = this.distance = this.distanceResisted = this.pullMoveY = 0;
         this.state = "pending";
+    }
+
+    private reload(refresh: Function) {
+        return Promise.resolve(refresh() || "success");
     }
 
     private onTouchStart(event: TouchEvent) {
@@ -127,79 +140,59 @@ export class PullToRefresh {
         this.pullStart.screenX = event.touches[0].screenX;
         this.pullStart.screenY = event.touches[0].screenY;
         this.enable = this.settings.triggerElement.contains(event.target as Node);
-        this.state = "pending";
-        this.lastDistance = 0;
-        this.update();
+        this.lastDistance = this.distanceResisted = 0;
+        this.update("pending");
     }
 
     private onTouchMove(event: TouchEvent) {
-        const { pullToRefreshElement, maximumDistance, thresholdDistance, cssProp, classPrefix } = this.settings;
+        const { pullToRefreshElement, maximumDistance, thresholdDistance } = this.settings;
         const touch = event.touches[0];
         const touchElement = document.elementFromPoint(touch.clientX, touch.clientY);
         this.pullMoveY = event.touches[0].screenY;
 
-        if (!this.enable || this.state === "refreshing" || this.updating || this.state === "scrolling") return;
-
-        if (this.isScrollActive(touchElement as HTMLElement)) return;
+        if (!this.enable || this.state === "refreshing" || this.state === "scrolling"
+            || this.isScrollActive(touchElement as HTMLElement)) return;
 
         if (this.state === "pending") {
-            domClass.add(pullToRefreshElement.id, `${classPrefix}pull`);
-            this.state = "pulling";
-            this.update();
+            this.update("pulling");
         }
         if (this.pullStart.screenY && this.pullMoveY) {
             this.distance = this.pullMoveY - this.pullStart.screenY;
         }
         if (this.distance > 0 && Math.abs(this.lastDistance - this.distance) > 1) {
-            this.lastDistance = this.distance;
-            event.preventDefault();
-            domStyle.set(pullToRefreshElement, cssProp, `${this.distanceResisted}px`);
-            this.distanceResisted = this.settings.resistanceFunction(this.distance / thresholdDistance)
+            const distanceResisted = this.settings.resistanceFunction(this.distance / thresholdDistance)
                 * Math.min(maximumDistance, this.distance);
 
-            if (this.state === "pulling" && this.distanceResisted > thresholdDistance) {
-                domClass.add(pullToRefreshElement.id, `${classPrefix}release`);
-                this.state = "releasing";
-                this.update();
+            this.lastDistance = this.distance;
+            event.preventDefault();
+            pullToRefreshElement.style.minHeight = `${this.distanceResisted}px`;
+            if (this.state === "pulling" && distanceResisted > thresholdDistance) {
+                this.update( "releaseToRefresh");
             }
 
-            if (this.state === "releasing" && this.distanceResisted < thresholdDistance) {
-                domClass.remove(pullToRefreshElement.id, `${classPrefix}release`);
-                this.state = "pulling";
-                this.update();
+            if (this.state === "releaseToRefresh" && distanceResisted < thresholdDistance) {
+                this.update("pulling");
             }
+            this.distanceResisted = distanceResisted;
         }
     }
 
     private onTouchEnd() {
-        const { pullToRefreshElement, onRefresh, cssProp, classPrefix } = this.settings;
+        const { pullToRefreshElement, onRefresh, classPrefix } = this.settings;
+        if (this.state === "releaseToRefresh") {
 
-        if (this.state === "releasing" && this.distanceResisted > this.settings.thresholdDistance) {
-            this.state = "refreshing";
-
-            domStyle.set(pullToRefreshElement, cssProp, `${this.settings.reloadDistance}px`);
+            pullToRefreshElement.style.minHeight = `${this.settings.reloadDistance}px`;
             domClass.add(pullToRefreshElement.id, `${classPrefix}refresh`);
 
             this.timeout = setTimeout(() => {
-                const afterRefresh = onRefresh(this.onReset);
-                if (afterRefresh && typeof afterRefresh.then === "function") {
-                    afterRefresh.then(() => this.onReset());
-                }
-                if (!afterRefresh && !onRefresh.length) {
-                    this.onReset();
-                }
+                this.reload(onRefresh).then(() => this.resetDom());
             }, this.settings.refreshTimeout);
+            this.update("refreshing");
+        } else if (this.state === "refreshing") {
+            return;
         } else {
-            if (this.state === "refreshing") return;
-
-            domStyle.set(pullToRefreshElement, cssProp, "0px");
-            this.state = "pending";
+            this.resetDom();
         }
-
-        this.update();
-        domClass.remove(pullToRefreshElement.id, `${classPrefix}release ${classPrefix}pull`);
-        this.pullStart.screenY = this.pullStart.screenX = this.pullMoveY = 0;
-        this.distance = this.distanceResisted = 0;
     }
 
     private isScrollActive(element: HTMLElement | null): boolean {

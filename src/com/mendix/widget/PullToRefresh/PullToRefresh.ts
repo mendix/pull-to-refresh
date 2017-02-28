@@ -7,6 +7,10 @@ import { PullToRefresh } from "./handlers/PullToRefresh";
 import "./ui/PullToRefresh.css";
 
 class PullToRefreshWrapper extends WidgetBase {
+    private pullToRefreshText: string;
+    private releaseToRefreshText: string;
+    private refreshText: string;
+
     private pullToRefreshElement: HTMLElement;
     private pullToRefresh: PullToRefresh;
 
@@ -25,7 +29,11 @@ class PullToRefreshWrapper extends WidgetBase {
 
         this.pullToRefresh = new PullToRefresh({
             mainElement: document.body,
-            pullToRefreshElement: this.pullToRefreshElement
+            onRefresh: () => { mx.ui.reload(); },
+            pullToRefreshElement: this.pullToRefreshElement,
+            pullToRefreshText: this.pullToRefreshText,
+            refreshText: this.refreshText,
+            releaseToRefreshText: this.releaseToRefreshText
         });
 
         this.pullToRefresh.setupEvents();
@@ -33,6 +41,7 @@ class PullToRefreshWrapper extends WidgetBase {
 
     uninitialize() {
         this.pullToRefresh.removeEvents();
+        domConstruct.destroy(this.pullToRefreshElement.id);
 
         return true;
     }

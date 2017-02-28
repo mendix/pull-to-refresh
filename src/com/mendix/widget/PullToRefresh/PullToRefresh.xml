@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <widget id="com.mendix.widget.PullToRefresh.PullToRefresh" needsEntityContext="false" xmlns="http://www.mendix.com/widget/1.0/">
-    <name>PullToRefresh</name>
-    <description>Swipe or pull down to reload a page</description>
+    <name>Pull to refresh</name>
+    <description>Swipe or pull down to refresh a page</description>
     <icon/>
     <properties>
-        <property key="key1" type="boolean" defaultValue="false">
-            <caption>Color</caption>
+        <property key="pullToRefreshText" type="string" defaultValue="Pull to refresh" required="false">
+            <caption>Text when pulling down</caption>
             <category>Display</category>
-            <description/>
+            <description>Text displayed while pulling</description>
+        </property>
+        <property key="releaseToRefreshText" type="string" defaultValue="Release to refresh" required="false">
+            <caption>Release to refresh text</caption>
+            <category>Display</category>
+            <description>Text displayed when pulling past refresh point</description>
+        </property>
+        <property key="refreshText" type="string" defaultValue="Refreshing" required="false">
+            <caption>Text when refreshing</caption>
+            <category>Display</category>
+            <description>Text displayed when refreshing</description>
         </property>
     </properties>
 </widget>
