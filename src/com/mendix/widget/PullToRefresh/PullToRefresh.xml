@@ -4,20 +4,32 @@
     <description>Swipe or pull down to refresh a page</description>
     <icon/>
     <properties>
-        <property key="pullToRefreshText" type="string" defaultValue="Pull to refresh" required="false">
+        <property key="pullToRefreshText" type="translatableString" required="false">
             <caption>Text when pulling down</caption>
             <category>Display</category>
             <description>Text displayed while pulling</description>
+            <translations>
+                <translation lang="en_US">Pull to refresh</translation>
+                <translation lang="nl_NL">Trek op te frissen</translation>
+            </translations>
         </property>
-        <property key="releaseToRefreshText" type="string" defaultValue="Release to refresh" required="false">
+        <property key="releaseToRefreshText" type="translatableString" required="false">
             <caption>Release to refresh text</caption>
             <category>Display</category>
             <description>Text displayed when pulling past refresh point</description>
+            <translations>
+                <translation lang="en_US">Release to refresh</translation>
+                <translation lang="nl_NL">Laat los om te verversen</translation>
+            </translations>
         </property>
-        <property key="refreshText" type="string" defaultValue="Refreshing" required="false">
+        <property key="refreshText" type="translatableString" required="false">
             <caption>Text when refreshing</caption>
             <category>Display</category>
             <description>Text displayed when refreshing</description>
+            <translations>
+                <translation lang="en_US">Refreshing</translation>
+                <translation lang="nl_NL">Verfrissend</translation>
+            </translations>
         </property>
     </properties>
 </widget>
