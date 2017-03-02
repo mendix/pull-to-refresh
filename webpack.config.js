@@ -11,10 +11,7 @@ module.exports = {
         libraryTarget:  "umd"
     },
     resolve: {
-        extensions: [ "", ".ts", ".js", ".json" ],
-        alias: {
-            "tests": path.resolve(__dirname, "./tests")
-        }
+        extensions: [ "", ".ts", ".js", ".json" ]
     },
     errorDetails: true,
     module: {
