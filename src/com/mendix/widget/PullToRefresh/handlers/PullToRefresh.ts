@@ -95,7 +95,7 @@ export class PullToRefresh {
         if (iconElement && textElement && nextState !== this.state ) {
             if (nextState === "refreshing") {
                 pullToRefreshElement.style.minHeight = `${reloadDistance}px`;
-                domClass.replace(pullToRefreshElement.id, `${classPrefix}refresh`, `${classPrefix}release`);
+                domClass.replace(pullToRefreshElement, `${classPrefix}refresh`, `${classPrefix}release`);
                 iconElement.innerHTML = iconRefreshing;
                 textElement.innerHTML = refreshText;
             } else {
@@ -103,13 +103,13 @@ export class PullToRefresh {
             }
 
             if (nextState === "releaseToRefresh") {
-                domClass.add(pullToRefreshElement.id, `${classPrefix}release`);
+                domClass.add(pullToRefreshElement, `${classPrefix}release`);
                 textElement.innerHTML = releaseToRefreshText;
             } else if (nextState === "pulling" || nextState === "pending") {
                 textElement.innerHTML = pullToRefreshText;
             }
             if (nextState === "pulling") {
-                domClass.replace(pullToRefreshElement.id, `${classPrefix}pull`, `${classPrefix}release`);
+                domClass.replace(pullToRefreshElement, `${classPrefix}pull`, `${classPrefix}release`);
             }
         }
         this.state = nextState;
@@ -117,7 +117,7 @@ export class PullToRefresh {
 
     private resetDom() {
         const { pullToRefreshElement, classPrefix } = this.settings;
-        domClass.remove(pullToRefreshElement.id, `${classPrefix}release ${classPrefix}pull ${classPrefix}refresh`);
+        domClass.remove(pullToRefreshElement, `${classPrefix}release ${classPrefix}pull ${classPrefix}refresh`);
         pullToRefreshElement.style.minHeight = "0px";
         this.pullStart = { screenY: 0, screenX: 0 };
         this.lastDistance = this.distance = this.distanceResisted = this.pullMoveY = 0;
@@ -165,7 +165,9 @@ export class PullToRefresh {
 
             this.lastDistance = this.distance;
             event.preventDefault();
-            pullToRefreshElement.style.minHeight = `${this.distanceResisted}px`;
+            if (this.distanceResisted !== distanceResisted) {
+               pullToRefreshElement.style.minHeight = `${this.distanceResisted}px`;
+            }
             if (this.state === "pulling" && distanceResisted > thresholdDistance) {
                 this.update( "releaseToRefresh");
             }
@@ -182,7 +184,7 @@ export class PullToRefresh {
         if (this.state === "releaseToRefresh") {
 
             pullToRefreshElement.style.minHeight = `${this.settings.reloadDistance}px`;
-            domClass.add(pullToRefreshElement.id, `${classPrefix}refresh`);
+            domClass.add(pullToRefreshElement, `${classPrefix}refresh`);
 
             this.timeout = setTimeout(() => {
                 this.reload(onRefresh).then(() => this.resetDom());
