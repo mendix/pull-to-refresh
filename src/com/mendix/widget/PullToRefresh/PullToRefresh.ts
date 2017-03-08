@@ -39,9 +39,8 @@ class PullToRefreshWrapper extends WidgetBase {
         this.pullToRefresh.setupEvents();
     }
 
-    uninitialize() {
+    uninitialize(): boolean {
         this.pullToRefresh.removeEvents();
-        domConstruct.destroy(this.pullToRefreshElement);
 
         return true;
     }
