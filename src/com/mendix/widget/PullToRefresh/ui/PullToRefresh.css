@@ -40,5 +40,6 @@
 
 #widget-pull-to-refresh {
     z-index: 10;
-    position: absolute
+    position: absolute;
+    background-color: rgba(211, 211, 211, 0.7);
 }
