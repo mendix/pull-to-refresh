@@ -81,5 +81,10 @@
         "no-unused-variable": [ true, "react" ],
         "arrow-parens": false,
         "curly": false
+    },
+    "jsRules": {
+        "trailing-comma": [ false ],
+        "object-literal-sort-keys": false,
+        "array-bracket-spacing": [ true, "always" ]
     }
 }

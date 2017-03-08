@@ -40,14 +40,20 @@ module.exports = function (grunt) {
 
         copy: {
             distDeployment: {
-                files: [
-                    { dest: "./dist/MxTestProject/deployment/web/widgets", cwd: "./dist/tmp/src/", src: [ "**/*" ], expand: true }
-                ]
+                files: [ {
+                    dest: "./dist/MxTestProject/deployment/web/widgets",
+                    cwd: "./dist/tmp/src/",
+                    src: [ "**/*" ],
+                    expand: true
+                } ]
             },
             mpk: {
-                files: [
-                    { dest: "./dist/MxTestProject/widgets", cwd: "./dist/" + pkg.version + "/", src: [ pkg.name + ".mpk" ], expand: true }
-                ]
+                files: [ {
+                    dest: "./dist/MxTestProject/widgets",
+                    cwd: "./dist/" + pkg.version + "/",
+                    src: [ pkg.name + ".mpk" ],
+                    expand: true
+                } ]
             },
             source: {
                 files: [
@@ -83,7 +89,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-check-dependencies");
     grunt.loadNpmTasks("grunt-webpack");
 
-    grunt.registerTask("default", ["clean build", "watch" ]);
+    grunt.registerTask("default", [ "clean build", "watch" ]);
     grunt.registerTask(
         "clean build",
         "Compiles all the assets and copies the files to the build directory.",
