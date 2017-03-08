@@ -120,7 +120,10 @@ export class PullToRefresh {
         domClass.remove(pullToRefreshElement, `${classPrefix}release ${classPrefix}pull ${classPrefix}refresh`);
         pullToRefreshElement.style.minHeight = "0px";
         this.pullStart = { screenY: 0, screenX: 0 };
-        this.lastDistance = this.distance = this.distanceResisted = this.pullMoveY = 0;
+        this.lastDistance = 0;
+        this.distance = 0;
+        this.distanceResisted = 0;
+        this.pullMoveY = 0;
         this.state = "pending";
     }
 
@@ -140,11 +143,13 @@ export class PullToRefresh {
         this.pullStart.screenX = event.touches[0].screenX;
         this.pullStart.screenY = event.touches[0].screenY;
         this.enable = this.settings.triggerElement.contains(event.target as Node);
-        this.lastDistance = this.distanceResisted = 0;
+        this.lastDistance = 0;
+        this.distanceResisted = 0;
         this.update("pending");
     }
 
     private onTouchMove(event: TouchEvent) {
+        event.preventDefault();
         const { pullToRefreshElement, maximumDistance, thresholdDistance } = this.settings;
         this.pullMoveY = event.touches[0].screenY;
 
@@ -161,7 +166,6 @@ export class PullToRefresh {
                 * Math.min(maximumDistance, this.distance);
 
             this.lastDistance = this.distance;
-            event.preventDefault();
             if (this.distanceResisted !== distanceResisted) {
                pullToRefreshElement.style.minHeight = `${this.distanceResisted}px`;
             }
