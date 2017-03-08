@@ -146,12 +146,9 @@ export class PullToRefresh {
 
     private onTouchMove(event: TouchEvent) {
         const { pullToRefreshElement, maximumDistance, thresholdDistance } = this.settings;
-        const touch = event.touches[0];
-        const touchElement = document.elementFromPoint(touch.clientX, touch.clientY);
         this.pullMoveY = event.touches[0].screenY;
 
-        if (!this.enable || this.state === "refreshing" || this.state === "scrolling"
-            || this.isScrollActive(touchElement as HTMLElement)) return;
+        if (!this.enable || this.state === "refreshing" || this.state === "scrolling") return;
 
         if (this.state === "pending") {
             this.update("pulling");
