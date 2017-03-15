@@ -115,24 +115,9 @@ export class PullToRefresh {
         this.state = nextState;
     }
 
-    private resetDom() {
-        const { pullToRefreshElement, classPrefix } = this.settings;
-        domClass.remove(pullToRefreshElement, `${classPrefix}release ${classPrefix}pull ${classPrefix}refresh`);
-        pullToRefreshElement.style.minHeight = "0px";
-        this.pullStart = { screenY: 0, screenX: 0 };
-        this.lastDistance = 0;
-        this.distance = 0;
-        this.distanceResisted = 0;
-        this.pullMoveY = 0;
-        this.state = "pending";
-    }
-
-    private reload(refresh: Function) {
-        return Promise.resolve(refresh() || "success");
-    }
-
     private onTouchStart(event: TouchEvent) {
-        if (this.state !== "pending") return;
+        this.state = "pending";
+        // if (this.state !== "pending") return;
         if (this.isScrollActive(event.target as HTMLElement)) {
             this.state = "scrolling";
             return;
@@ -149,11 +134,9 @@ export class PullToRefresh {
     }
 
     private onTouchMove(event: TouchEvent) {
-        event.preventDefault();
+        if (!this.enable || this.state === "refreshing" || this.state === "scrolling") return;
         const { pullToRefreshElement, maximumDistance, thresholdDistance } = this.settings;
         this.pullMoveY = event.touches[0].screenY;
-
-        if (!this.enable || this.state === "refreshing" || this.state === "scrolling") return;
 
         if (this.state === "pending") {
             this.update("pulling");
@@ -162,6 +145,7 @@ export class PullToRefresh {
             this.distance = this.pullMoveY - this.pullStart.screenY;
         }
         if (this.distance > 0 && Math.abs(this.lastDistance - this.distance) > 1) {
+            event.preventDefault();
             const distanceResisted = this.settings.resistanceFunction(this.distance / thresholdDistance)
                 * Math.min(maximumDistance, this.distance);
 
@@ -207,5 +191,21 @@ export class PullToRefresh {
         } else {
             return this.isScrollActive(element.parentNode as HTMLElement);
         }
+    }
+
+    private resetDom() {
+        const { pullToRefreshElement, classPrefix } = this.settings;
+        domClass.remove(pullToRefreshElement, `${classPrefix}release ${classPrefix}pull ${classPrefix}refresh`);
+        pullToRefreshElement.style.minHeight = "0px";
+        this.pullStart = { screenY: 0, screenX: 0 };
+        this.lastDistance = 0;
+        this.distance = 0;
+        this.distanceResisted = 0;
+        this.pullMoveY = 0;
+        this.state = "pending";
+    }
+
+    private reload(refresh: Function) {
+        return Promise.resolve(refresh() || "success");
     }
 }
