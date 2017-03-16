@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="com.mendix.widget.PullToRefresh.PullToRefresh" needsEntityContext="false" xmlns="http://www.mendix.com/widget/1.0/">
+<widget id="com.mendix.widget.PullToRefresh.PullToRefresh" needsEntityContext="false"  offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/">
     <name>Pull to refresh</name>
     <description>Swipe or pull down to refresh a page</description>
     <icon/>
@@ -10,7 +10,7 @@
             <description>Text displayed while pulling</description>
             <translations>
                 <translation lang="en_US">Pull to refresh</translation>
-                <translation lang="nl_NL">Trek op te frissen</translation>
+                <translation lang="nl_NL">Trek omlaag voor herladen</translation>
             </translations>
         </property>
         <property key="releaseToRefreshText" type="translatableString" required="false">
@@ -19,7 +19,7 @@
             <description>Text displayed when pulling past refresh point</description>
             <translations>
                 <translation lang="en_US">Release to refresh</translation>
-                <translation lang="nl_NL">Laat los om te verversen</translation>
+                <translation lang="nl_NL">Laat los om te herladen</translation>
             </translations>
         </property>
         <property key="refreshText" type="translatableString" required="false">
@@ -28,7 +28,7 @@
             <description>Text displayed when refreshing</description>
             <translations>
                 <translation lang="en_US">Refreshing</translation>
-                <translation lang="nl_NL">Verfrissend</translation>
+                <translation lang="nl_NL">Herladen</translation>
             </translations>
         </property>
     </properties>
