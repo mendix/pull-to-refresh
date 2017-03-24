@@ -29,7 +29,7 @@ class PullToRefreshWrapper extends WidgetBase {
 
         this.pullToRefresh = new PullToRefresh({
             mainElement: document.body,
-            onRefresh: () => { mx.ui.reload(); },
+            onRefresh: this.onRefresh,
             pullToRefreshElement: this.pullToRefreshElement,
             pullToRefreshText: this.pullToRefreshText,
             refreshText: this.refreshText,
@@ -44,6 +44,15 @@ class PullToRefreshWrapper extends WidgetBase {
 
         return true;
     }
+
+    private onRefresh() {
+        window.mx.data.synchronizeDataWithFiles(() => {
+            window.mx.ui.reload();
+                    }, (t) => {
+                        !(t instanceof Error) ? window.mx.onError(new Error(t.message)) :
+                        window.mx.ui.info(window.mx.ui.translate("mxui.sys.UI", "sync_error"), !0);
+                    });
+                }
 }
 
 // tslint:disable : only-arrow-functions

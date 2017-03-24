@@ -43,7 +43,6 @@ export class PullToRefresh {
     private distanceResisted = 0;
     private state: State;
     private enable: boolean;
-    private timeout: number;
     private lastDistance = 0;
 
     constructor(params: Params) {
@@ -117,13 +116,10 @@ export class PullToRefresh {
 
     private onTouchStart(event: TouchEvent) {
         this.state = "pending";
-        // if (this.state !== "pending") return;
         if (this.isScrollActive(event.target as HTMLElement)) {
             this.state = "scrolling";
             return;
         }
-
-        clearTimeout(this.timeout);
 
         this.pullStart.screenX = event.touches[0].screenX;
         this.pullStart.screenY = event.touches[0].screenY;
@@ -171,9 +167,7 @@ export class PullToRefresh {
             pullToRefreshElement.style.minHeight = `${this.settings.reloadDistance}px`;
             domClass.add(pullToRefreshElement, `${classPrefix}refresh`);
 
-            this.timeout = setTimeout(() => {
-                this.reload(onRefresh).then(() => this.resetDom());
-            }, this.settings.refreshTimeout);
+            this.reload(onRefresh).then(() => this.resetDom());
             this.update("refreshing");
         } else if (this.state === "refreshing") {
             return;
