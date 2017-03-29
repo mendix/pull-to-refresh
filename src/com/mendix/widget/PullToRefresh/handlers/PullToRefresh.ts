@@ -16,7 +16,6 @@ interface Settings {
     pullToRefreshText: string;
     releaseToRefreshText: string;
     refreshText: string;
-    refreshTimeout: number;
     onRefresh: ((value: Function) => Promise<void>) | ((value: Function) => void);
     resistanceFunction: (value: number) => number;
     textElement: Element | null;
@@ -55,6 +54,7 @@ export class PullToRefresh {
             classPrefix,
             cssProp: "min-height",
             iconArrow: "&#8675;",
+            iconElement: params.pullToRefreshElement.querySelector(`.${classPrefix}icon`),
             iconRefreshing: "&hellip;",
             mainElement: params.mainElement,
             maximumDistance: 150,
@@ -62,14 +62,12 @@ export class PullToRefresh {
             pullToRefreshElement: params.pullToRefreshElement,
             pullToRefreshText: params.pullToRefreshText || "",
             refreshText: params.refreshText || "",
-            refreshTimeout: 500,
             releaseToRefreshText: params.releaseToRefreshText || "",
             reloadDistance: 50,
             resistanceFunction: (distance) => Math.min(1, distance / 2.5),
+            textElement: params.pullToRefreshElement.querySelector(`.${classPrefix}text`),
             thresholdDistance: 80,
-            triggerElement: params.mainElement,
-            iconElement: params.pullToRefreshElement.querySelector(`.${classPrefix}icon`),
-            textElement: params.pullToRefreshElement.querySelector(`.${classPrefix}text`)
+            triggerElement: params.mainElement
         };
         this.state = "pending";
         this.pullStart = { screenX: 0, screenY: 0 };
