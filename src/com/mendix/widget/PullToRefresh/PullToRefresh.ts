@@ -49,7 +49,7 @@ class PullToRefreshWrapper extends WidgetBase {
         window.mx.data.synchronizeDataWithFiles(() => {
             window.mx.ui.reload();
                     }, (error) => {
-                        (error instanceof Error) ? window.mx.onError(error) :
+                        !(error instanceof Error) ? window.mx.onError(error) :
                         window.mx.ui.info(window.mx.ui.translate("mxui.sys.UI", "sync_error"), !0);
                     });
                 }
