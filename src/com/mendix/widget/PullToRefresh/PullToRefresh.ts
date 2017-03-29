@@ -2,6 +2,7 @@ import * as dojoDeclare from "dojo/_base/declare";
 import * as dojoDom from "dojo/dom";
 import * as domConstruct from "dojo/dom-construct";
 import * as WidgetBase from "mxui/widget/_WidgetBase";
+
 import { PullToRefresh } from "./handlers/PullToRefresh";
 
 import "./ui/PullToRefresh.css";
@@ -15,6 +16,7 @@ class PullToRefreshWrapper extends WidgetBase {
     private pullToRefresh: PullToRefresh;
 
     postCreate() {
+        // We share the refresh element across pages. Else the setup and destroy will conflict
         this.pullToRefreshElement = dojoDom.byId("widget-pull-to-refresh");
         if (!this.pullToRefreshElement) {
             this.pullToRefreshElement = domConstruct.create("div", {
@@ -45,14 +47,12 @@ class PullToRefreshWrapper extends WidgetBase {
         return true;
     }
 
-    private onRefresh() {
-        window.mx.data.synchronizeDataWithFiles(() => {
-            window.mx.ui.reload();
-                    }, (error) => {
-                        !(error instanceof Error) ? window.mx.onError(error) :
-                        window.mx.ui.info(window.mx.ui.translate("mxui.sys.UI", "sync_error"), !0);
-                    });
-                }
+    private onRefresh(callback: () => void) {
+        window.mx.data.synchronizeDataWithFiles(() => window.mx.ui.reload(callback), (error) => {
+            logger.error(error);
+            window.mx.ui.info(window.mx.ui.translate("mxui.sys.UI", "sync_error"), true);
+        });
+    }
 }
 
 // tslint:disable : only-arrow-functions

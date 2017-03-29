@@ -1,7 +1,8 @@
 {
   "name": "pulltorefresh",
+  "widgetName": "PullToRefresh",
   "version": "0.1.0",
-  "description": "Pull down to reload a page",
+  "description": "Use touch on mobile enabling pull down to reload a page",
   "repository": {
     "type": "git",
     "url": "https://github.com/mendixlabs/pull-to-refresh"
@@ -12,11 +13,9 @@
   },
   "devDependencies": {
     "@types/big.js": "0.0.31",
-    "@types/core-js": "^0.9.35",
     "@types/dojo": "^1.9.35",
     "check-dependencies": "^1.0.1",
     "copy-webpack-plugin": "^4.0.1",
-    "core-js": "^2.4.1",
     "css-loader": "^0.26.1",
     "extract-text-webpack-plugin": "^1.0.1",
     "grunt": "1.0.1",

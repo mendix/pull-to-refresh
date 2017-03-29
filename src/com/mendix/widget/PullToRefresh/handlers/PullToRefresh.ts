@@ -1,4 +1,3 @@
-import * as Promise from "core-js/fn/promise";
 import * as domClass from "dojo/dom-class";
 
 interface Settings {
@@ -16,14 +15,14 @@ interface Settings {
     pullToRefreshText: string;
     releaseToRefreshText: string;
     refreshText: string;
-    onRefresh: ((value: Function) => Promise<void>) | ((value: Function) => void);
+    onRefresh: (callback: () => void) => void;
     resistanceFunction: (value: number) => number;
     textElement: Element | null;
 }
 type State = "pending" | "pulling" | "releaseToRefresh" | "refreshing" | "scrolling";
 
 interface Params {
-    onRefresh: () => void;
+    onRefresh: (callback: () => void) => void;
     mainElement: HTMLElement;
     pullToRefreshElement: HTMLElement;
     pullToRefreshText?: string;
@@ -165,7 +164,7 @@ export class PullToRefresh {
             pullToRefreshElement.style.minHeight = `${this.settings.reloadDistance}px`;
             domClass.add(pullToRefreshElement, `${classPrefix}refresh`);
 
-            this.reload(onRefresh).then(() => this.resetDom());
+            onRefresh(() => this.resetDom());
             this.update("refreshing");
         } else if (this.state === "refreshing") {
             return;
@@ -195,9 +194,5 @@ export class PullToRefresh {
         this.distanceResisted = 0;
         this.pullMoveY = 0;
         this.state = "pending";
-    }
-
-    private reload(refresh: Function) {
-        return Promise.resolve(refresh() || "success");
     }
 }
