@@ -24,12 +24,12 @@
 
 .pull-to-refresh-text {
     margin-top: .33em;
-    color: rgba(0, 0, 0, 1);
+    color: #FFFFFF;
     font-size: 14px;
 }
 
 .pull-to-refresh-icon {
-    color: rgba(0, 0, 0, 0.6);
+    color: #FFFFFF;
     transition: transform .3s;
     font-size: 20px;
 }
@@ -41,5 +41,5 @@
 #widget-pull-to-refresh {
     z-index: 10;
     position: absolute;
-    background-color: rgba(211, 211, 211, 0.7);
+    background-color: rgba(0, 0, 0, 0.8);
 }
