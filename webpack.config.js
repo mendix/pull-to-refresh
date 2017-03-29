@@ -8,7 +8,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
         filename: "src/com/mendix/widget/PullToRefresh/PullToRefresh.js",
-        libraryTarget:  "umd"
+        libraryTarget: "umd"
     },
     resolve: {
         extensions: [ "", ".ts", ".js", ".json" ]
