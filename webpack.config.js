@@ -4,10 +4,10 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-    entry: "./src/com/mendix/widget/PullToRefresh/PullToRefresh.ts",
+    entry: "./src/PullToRefresh/widget/PullToRefresh.ts",
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
-        filename: "src/com/mendix/widget/PullToRefresh/PullToRefresh.js",
+        filename: "src/PullToRefresh/widget/PullToRefresh.js",
         libraryTarget: "umd"
     },
     resolve: {
@@ -32,7 +32,7 @@ module.exports = {
         ], {
             copyUnmodified: true
         }),
-        new ExtractTextPlugin("./src/com/mendix/widget/PullToRefresh/ui/PullToRefresh.css")
+        new ExtractTextPlugin("./src/PullToRefresh/widget/ui/PullToRefresh.css")
     ],
     watch: true
 };
