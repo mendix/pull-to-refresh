@@ -1,8 +1,12 @@
 "use strict";
+const webpack = require("webpack");
 const webpackConfig = require("./webpack.config");
 const webpackConfigRelease = {};
+const plugins = webpackConfig.plugins.slice(0);
+plugins.push(new webpack.optimize.UglifyJsPlugin());
 Object.assign(webpackConfigRelease, webpackConfig, {
-    devtool: false
+    devtool: false,
+    plugins: plugins
 });
 
 module.exports = function (grunt) {
@@ -58,9 +62,12 @@ module.exports = function (grunt) {
                 } ]
             },
             source: {
-                files: [
-                    { dest: "./dist/tmp/src", cwd: "./src/", src: [ "**/*", "!**/*.ts", "!**/*.css" ], expand: true }
-                ]
+                files: [ {
+                    dest: "./dist/tmp/src",
+                    cwd: "./src/",
+                    src: [ "**/*", "!**/*.ts", "!**/*.css" ],
+                    expand: true
+                } ]
             }
         },
 

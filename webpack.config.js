@@ -11,14 +11,15 @@ module.exports = {
         libraryTarget: "umd"
     },
     resolve: {
-        extensions: [ "", ".ts", ".js", ".json" ]
+        extensions: [ ".ts", ".js", ".json" ]
     },
-    errorDetails: true,
     module: {
-        loaders: [
-            { test: /\.ts$/, loader: "ts-loader" },
-            { test: /\.json$/, loader: "json" },
-            { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
+        rules: [
+            { test: /\.ts$/, use: "ts-loader" },
+            { test: /\.css$/, loader: ExtractTextPlugin.extract({
+                fallback: "style-loader",
+                use: "css-loader"
+            }) }
         ]
     },
     devtool: "source-map",
@@ -28,11 +29,15 @@ module.exports = {
     plugins: [
         new CopyWebpackPlugin([
             { from: "src/**/*.js" },
-            { from: "src/**/*.xml" }
+            { from: "src/**/*.xml" },
+            { from: "assets/Preview.png", to: "src/Preview.png"}
         ], {
             copyUnmodified: true
         }),
-        new ExtractTextPlugin("./src/PullToRefresh/widget/ui/PullToRefresh.css")
-    ],
-    watch: true
+        new ExtractTextPlugin({
+            filename: "./src/PullToRefresh/widget/ui/PullToRefresh.css" }),
+            new webpack.LoaderOptionsPlugin({
+                debug: true
+            })
+    ]
 };
