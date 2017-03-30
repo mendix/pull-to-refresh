@@ -19,6 +19,8 @@ Mendix 6.10
 ## Demo project
 https://pulltorefresh.mxapps.io
 
+![1](https://raw.githubusercontent.com/flockofbirds/pull-to-refresh/feature/pull-to-refresh/assets/demo.gif)
+
 ## Usage
 * Place the widget on a page or layout
 * Add configurations for the different text when:
@@ -30,6 +32,27 @@ https://pulltorefresh.mxapps.io
 ## Issues, suggestions and feature requests
 We are actively maintaining this widget, please report any issues or suggestions for improvement
 https://github.com/mendixlabs/pull-to-refresh/issues
+
+## Development
+Prerequisite: Install git, node package manager, webpack CLI, grunt CLI
+
+To contribute, fork and clone.
+
+    > git clone https://github.com/mendixlabs/pull-to-refresh.git
+
+The code is in typescript. Use a typescript IDE of your choice, like Visual Studio Code or WebStorm.
+
+To set up the development environment, run:
+
+    > npm install
+
+Create a folder named `dist` in the project root.
+
+Create a Mendix test project in the dist folder and rename its root folder to `dist/MxTestProject`. Changes to the widget code shall be automatically pushed to this test project.
+
+To automatically compile, bundle and push code changes to the running test project, run:
+
+    > grunt
 
 ## Disclaimer
 Status: In development

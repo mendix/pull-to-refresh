@@ -30,7 +30,7 @@ module.exports = {
         new CopyWebpackPlugin([
             { from: "src/**/*.js" },
             { from: "src/**/*.xml" },
-            { from: "assets/Preview.png", to: "src/Preview.png"}
+            { from: "assets/Preview.png", to: "src/PullToRefresh/widget/Preview.png"}
         ], {
             copyUnmodified: true
         }),
