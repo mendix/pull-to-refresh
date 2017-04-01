@@ -1,7 +1,7 @@
 {
   "name": "pulltorefresh",
   "widgetName": "PullToRefresh",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Use touch on mobile enabling pull down to reload a page",
   "repository": {
     "type": "git",
