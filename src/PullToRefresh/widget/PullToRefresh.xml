@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="PullToRefresh.widget.PullToRefresh" needsEntityContext="false"  offlineCapable="true" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>Pull to refresh</name>
+    <description>Use touch on mobile enabling pull down to reload a page</description>
+    <icon>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTM0A1t6AAABy0lEQVQ4T31TPUtcQRSdtyagECGFioiQJmGTded9zMfuZpvXaJGQIgpb2CWllT8gBKv8BS3EzsROWwVLESQpU6WzEZsg6KIJSTaeO3Pf7qwfe+DAm3PvuXPnzjxRQCqzTORllKb1ZzI1s8Sq1s+hlXzoHsTa7IO/pLYfUOg7vv/G2v4vSFqSmfd5nj9gSw/lZnMUxnZoAP/Fyh5LZU/cd6Er81lr/ZCtHkh8000AYTrKsuwpQqVWqzUklZLoYBX843PMJmKRMxNQdT0sgPU5mTjcBQq/Q7xDOVLXFlkWESp+wxHO+mm2OR4iQrdf/EbmK2sO1M5dvIXE2pS7+J0kyWNBU03TdByDGeOcgXADV/6GZrLshYiNqbqWlLlCsWHOG4SINqNN6VvE8csJmKliR6q69jkBVlZKuJEnNylrtWnOcEM8pC4w5S1ae9mDjgh9z3UZENoBpwiBp/oaIg2G+AlSXxFpTBn6BRm7VPYjhx0iXN1GEcQV7sL0is6JdqcSZeeh/QgL0G2w14OeJ6a7FiaB9IR7z7igMqf0QtnahyjVes51oMxlYPgJ7iS69hadtnlWg1Gp5I8q1k4SG43GCMv03yzFmVnwKyGuAQyAuR4WIpgNAAAAAElFTkSuQmCC</icon>
+    <properties>
+        <property key="pullToRefreshText" type="translatableString" required="false">
+            <caption>Text when pulling down</caption>
+            <category>Display</category>
+            <description>Text displayed while pulling</description>
+            <translations>
+                <translation lang="en_US">Pull to refresh</translation>
+                <translation lang="nl_NL">Trek omlaag voor herladen</translation>
+            </translations>
+        </property>
+        <property key="releaseToRefreshText" type="translatableString" required="false">
+            <caption>Release to refresh text</caption>
+            <category>Display</category>
+            <description>Text displayed when pulling past refresh point</description>
+            <translations>
+                <translation lang="en_US">Release to refresh</translation>
+                <translation lang="nl_NL">Laat los om te herladen</translation>
+            </translations>
+        </property>
+        <property key="refreshText" type="translatableString" required="false">
+            <caption>Text when refreshing</caption>
+            <category>Display</category>
+            <description>Text displayed when refreshing</description>
+            <translations>
+                <translation lang="en_US">Refreshing</translation>
+                <translation lang="nl_NL">Herladen</translation>
+            </translations>
+        </property>
+    </properties>
+</widget>

@@ -1,0 +1,45 @@
+.pull-to-refresh-pull-to-refresh {
+    pointer-events: none;
+    font-size: 0.85em;
+    font-weight: bold;
+    top: 0;
+    height: 0;
+    transition: height 0.3s, min-height 0.3s;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    align-content: stretch;
+}
+
+.pull-to-refresh-box {
+    padding: 10px;
+    flex-basis: 100%;
+}
+
+.pull-to-refresh-pull {
+    transition: none;
+}
+
+.pull-to-refresh-text {
+    margin-top: .33em;
+    color: #FFFFFF;
+    font-size: 14px;
+}
+
+.pull-to-refresh-icon {
+    color: #FFFFFF;
+    transition: transform .3s;
+    font-size: 20px;
+}
+
+.pull-to-refresh-release .pull-to-refresh-icon {
+    transform: rotate(180deg);
+}
+
+#widget-pull-to-refresh {
+    z-index: 10;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+}
