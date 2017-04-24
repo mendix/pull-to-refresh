@@ -79,7 +79,7 @@ class PullToRefreshWrapper extends WidgetBase {
 
     private onSyncSuccess(callback: () => void) {
         window.mx.ui.reload(() => {
-            if (this.progressId) {
+            if (this.progressId || this.progressId === 0) {
                 window.mx.ui.hideProgress(this.progressId);
             }
             this.pullToRefresh.setupEvents();
