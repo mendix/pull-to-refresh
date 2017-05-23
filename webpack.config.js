@@ -3,7 +3,7 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-module.exports = {
+const widgetConfig = {
     entry: "./src/PullToRefresh/widget/PullToRefresh.ts",
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
@@ -19,17 +19,26 @@ module.exports = {
             { test: /\.css$/, loader: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: "css-loader"
-            }) }
+            }) },
+            { test: /\.(png|jpeg)$/, loader: "url-loader", options: { limit: 8192 } }
         ]
     },
     devtool: "source-map",
     externals: [
-        "mxui/widget/_WidgetBase", "dojo/_base/declare", "dojo/dom-construct", "dojo/dom", "dojo/dom-class",
-        "dojo/dom-style" ],
+        "react",
+        "react-dom",
+        "mxui/widget/_WidgetBase",
+        "dojo/_base/declare",
+        "dojo/dom-construct",
+        "dojo/dom",
+        "dojo/dom-class",
+        "dojo/dom-style"
+    ],
     plugins: [
         new CopyWebpackPlugin([
             { from: "src/**/*.js" },
             { from: "src/**/*.xml" },
+            { from: "src/**/*.png" },
             { from: "assets/Preview.png", to: "src/PullToRefresh/widget/Preview.png"}
         ], {
             copyUnmodified: true
@@ -41,3 +50,29 @@ module.exports = {
             })
     ]
 };
+
+const previewConfig = {
+    entry: "./src/PullToRefresh/widget/PullToRefresh.webmodeler.ts",
+    output: {
+        path: path.resolve(__dirname, "dist/tmp"),
+        filename: "src/PullToRefresh/widget/PullToRefresh.webmodeler.js",
+        libraryTarget: "commonjs"
+    },
+    resolve: {
+        extensions: [ ".ts", ".js" ]
+    },
+    module: {
+        rules: [
+            { test: /\.ts$/, use: "ts-loader" },
+            { test: /\.css$/, loader: "raw-loader" },
+            { test: /\.(png|jpeg)$/, loader: "url-loader", options: { limit: 8192 } }
+        ]
+    },
+    devtool: "inline-source-map",
+    externals: [ "react", "react-dom" ],
+    plugins: [
+        new webpack.LoaderOptionsPlugin({ debug: true })
+    ]
+};
+
+module.exports = [ widgetConfig, previewConfig ];
