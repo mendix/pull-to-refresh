@@ -85,8 +85,17 @@ export class PullToRefresh {
     }
 
     private update(nextState: State) {
-        const { iconElement, textElement, pullToRefreshElement, classPrefix, iconRefreshing, iconArrow,
-            refreshText, pullToRefreshText, releaseToRefreshText, reloadDistance } = this.settings;
+        const {
+            iconElement,
+            textElement,
+            pullToRefreshElement,
+            classPrefix,
+            iconRefreshing,
+            iconArrow,
+            refreshText,
+            pullToRefreshText,
+            releaseToRefreshText,
+            reloadDistance } = this.settings;
 
         if (iconElement && textElement && nextState !== this.state ) {
             if (nextState === "refreshing") {
