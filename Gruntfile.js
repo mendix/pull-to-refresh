@@ -1,19 +1,20 @@
 "use strict";
 const webpack = require("webpack");
 const webpackConfig = require("./webpack.config");
-const webpackConfigRelease = [ {}, {} ];
-const pluginsWidget = webpackConfig[0].plugins.slice(0);
-pluginsWidget.push(new webpack.optimize.UglifyJsPlugin());
-Object.assign(webpackConfigRelease[0], webpackConfig[0], {
-    devtool: false,
-    plugins: pluginsWidget
+const webpackConfigRelease = [];
+
+webpackConfig.forEach(function (currentWebpackConfig) {
+    const webpackLoaderOptionsPlugin = currentWebpackConfig.plugins.slice(0);
+    const configRelease = {};
+
+    webpackLoaderOptionsPlugin.push(new webpack.optimize.UglifyJsPlugin());
+    Object.assign(configRelease, currentWebpackConfig, {
+        devtool: false,
+        plugins: webpackLoaderOptionsPlugin
+    });
+    webpackConfigRelease.push(configRelease)
 });
-const pluginsPreview = webpackConfig[1].plugins.slice(0);
-pluginsPreview.push(new webpack.optimize.UglifyJsPlugin());
-Object.assign(webpackConfigRelease[1], webpackConfig[1], {
-    devtool: false,
-    plugins: pluginsPreview
-});
+
 
 module.exports = function(grunt) {
     const pkg = grunt.file.readJSON("package.json");
