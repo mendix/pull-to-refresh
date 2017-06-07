@@ -14,12 +14,12 @@ Pull down on mobile to enable page refresh.
 * Pull to refresh will only work when everything is scrolled to top
 
 ## Dependencies
-Mendix version 7.3 or up
+Mendix version 6.10 or up
 
 ## Demo project
 https://pulltorefresh.mxapps.io
 
-![1](https://raw.githubusercontent.com/mendixlabs/pull-to-refresh/v1.1.0/assets/demo.gif)
+![1](https://raw.githubusercontent.com/mendixlabs/pull-to-refresh/v1.0.1/assets/demo.gif)
 
 ## Usage
 * Place the widget on a page or layout

@@ -8,10 +8,10 @@ const widgetConfig = {
     output: {
         path: path.resolve(__dirname, "dist/tmp"),
         filename: "src/PullToRefresh/widget/PullToRefresh.js",
-        libraryTarget: "umd"
+        libraryTarget: "amd"
     },
     resolve: {
-        extensions: [ ".ts", ".js", ".json" ]
+        extensions: [ ".ts" ]
     },
     module: {
         rules: [
@@ -24,19 +24,9 @@ const widgetConfig = {
         ]
     },
     devtool: "source-map",
-    externals: [
-        "react",
-        "react-dom",
-        "mxui/widget/_WidgetBase",
-        "dojo/_base/declare",
-        "dojo/dom-construct",
-        "dojo/dom",
-        "dojo/dom-class",
-        "dojo/dom-style"
-    ],
+    externals: [ "react", "react-dom", /^mxui\/|^mendix\/|^dojo\/|^dijit\// ],
     plugins: [
         new CopyWebpackPlugin([
-            { from: "src/**/*.js" },
             { from: "src/**/*.xml" },
             { from: "src/**/*.png" },
             { from: "assets/Preview.png", to: "src/PullToRefresh/widget/Preview.png"}
@@ -59,7 +49,7 @@ const previewConfig = {
         libraryTarget: "commonjs"
     },
     resolve: {
-        extensions: [ ".ts", ".js" ]
+        extensions: [ ".ts" ]
     },
     module: {
         rules: [
