@@ -12,7 +12,6 @@
         "no-conditional-assignment": true,
         "no-console": [ true ],
         "no-debugger": true,
-        "no-duplicate-key": true,
         "no-duplicate-variable": true,
         "no-eval": true,
         "no-inferrable-types": [ true ],
@@ -20,7 +19,6 @@
         "no-shadowed-variable": true,
         "no-switch-case-fall-through": true,
         "no-trailing-whitespace": true,
-        "no-unreachable": true,
         "no-unused-expression": true,
         "no-var-keyword": true,
         "one-line": [
