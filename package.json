@@ -3,6 +3,12 @@
   "widgetName": "PullToRefresh",
   "version": "1.0.0",
   "description": "Use touch on mobile enabling pull down to reload a page",
+  "scripts": {
+    "typeCheck": "tsc --noEmit",
+    "test:unit": "echo \"No tests specified\"",
+    "lint": "tslint -c tslint.json '**/*.ts' --exclude '**/node_modules/**'",
+    "build": "grunt build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mendixlabs/pull-to-refresh"
@@ -27,7 +33,7 @@
     "grunt-newer": "^1.1.1",
     "grunt-webpack": "^2.0.1",
     "json-loader": "^0.5.4",
-    "mendix-client": "git+https://github.com/FlockOfBirds/Mendix-client-typing.git",
+    "mendix-client": "^7.15.7",
     "source-map-loader": "^0.2.0",
     "style-loader": "^0.13.2",
     "ts-loader": "^2.0.1",

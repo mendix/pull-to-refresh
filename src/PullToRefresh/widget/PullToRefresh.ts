@@ -5,6 +5,7 @@ import * as WidgetBase from "mxui/widget/_WidgetBase";
 
 import { PullToRefresh } from "./handlers/PullToRefresh";
 import "./ui/PullToRefresh.css";
+import { mxTranslation } from "./util/translation";
 
 class PullToRefreshWrapper extends WidgetBase {
     private pullToRefreshText: string;
@@ -89,7 +90,7 @@ class PullToRefreshWrapper extends WidgetBase {
 
     private onSyncFailure() {
         if (this.progressId) window.mx.ui.hideProgress(this.progressId);
-        window.mx.ui.info(window.mx.ui.translate("mxui.sys.UI", "sync_error"), true);
+        window.mx.ui.info(mxTranslation("mxui.sys.UI", "sync_error", []), true);
         this.pullToRefresh.setupEvents();
     }
 }
