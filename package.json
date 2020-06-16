@@ -1,12 +1,14 @@
 {
   "name": "pulltorefresh",
   "widgetName": "PullToRefresh",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Use touch on mobile enabling pull down to reload a page",
   "scripts": {
     "typeCheck": "tsc --noEmit",
     "test:unit": "echo \"No tests specified\"",
     "lint": "tslint -c tslint.json '**/*.ts' --exclude '**/node_modules/**'",
+    "lint:fix": "tslint --fix -c tslint.json '**/*.ts' --exclude '**/node_modules/**'",
+    "dev": "grunt",
     "build": "grunt build"
   },
   "repository": {
