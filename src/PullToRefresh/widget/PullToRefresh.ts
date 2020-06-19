@@ -11,20 +11,24 @@ class PullToRefreshWrapper extends WidgetBase {
     private pullToRefreshText: string;
     private releaseToRefreshText: string;
     private refreshText: string;
+    private action: "refresh" | "nanoflow" | "microflow";
+    private onPullMicroflow?: string;
+    private onPullNanoflow: mx.Nanoflow;
 
     private pullToRefreshElement: HTMLElement;
     private pullToRefresh: PullToRefresh;
     private progressId: number;
 
     postCreate() {
-        this.onRefresh = this.onRefresh.bind(this);
+        this.onAction = this.onAction.bind(this);
         this.onSyncFailure = this.onSyncFailure.bind(this);
 
-        if (!window.mx.data.synchronizeOffline && !window.mx.data.synchronizeDataWithFiles) {
-            domConstruct.create("div", {
-                class: "alert alert-danger",
-                innerHTML: "The pull to refresh widget is not compatible with this version of Mendix"
-            }, this.domNode);
+        if (this.action === "refresh" && !window.mx.data.synchronizeOffline && !window.mx.data.synchronizeDataWithFiles) {
+            this.showError("The pull to refresh widget is not compatible with this version of Mendix");
+        } else if (this.action === "microflow" && !this.onPullMicroflow) {
+            this.showError("Configuration error: The 'On pull down action' is set to 'Call microflow' and requires a microflow to be selected");
+        } else if (this.action === "nanoflow" && !this.onPullNanoflow?.nanoflow) {
+            this.showError("Configuration error: The 'On pull down action' is set to 'Call nanoflow' and requires a nanoflow to be selected");
         } else {
             // We share the refresh element across pages. Else the setup and destroy will conflict
             this.setUpWidgetDom();
@@ -36,6 +40,13 @@ class PullToRefreshWrapper extends WidgetBase {
         this.pullToRefresh.removeEvents();
 
         return true;
+    }
+
+    private showError(message: string) {
+        domConstruct.create("div", {
+            class: "alert alert-danger",
+            innerHTML: message
+        }, this.domNode);
     }
 
     private setUpWidgetDom() {
@@ -57,12 +68,22 @@ class PullToRefreshWrapper extends WidgetBase {
 
         this.pullToRefresh = new PullToRefresh({
             mainElement: document.body,
-            onRefresh: this.onRefresh,
+            onRefresh: this.onAction,
             pullToRefreshElement: this.pullToRefreshElement,
             pullToRefreshText: this.pullToRefreshText,
             refreshText: this.refreshText,
             releaseToRefreshText: this.releaseToRefreshText
         });
+    }
+
+    private onAction(callback: () => void) {
+        if (this.action === "refresh") {
+            this.onRefresh(callback);
+        } else if (this.action === "microflow") {
+            this.callMicroflow(callback);
+        } else if (this.action === "nanoflow") {
+            this.callNanoflow(callback);
+        }
     }
 
     // Note; this function is hooking into the Mendix private API, this is subject to change without notice!
@@ -92,6 +113,34 @@ class PullToRefreshWrapper extends WidgetBase {
         if (this.progressId) window.mx.ui.hideProgress(this.progressId);
         window.mx.ui.info(mxTranslation("mxui.sys.UI", "sync_error", []), true);
         this.pullToRefresh.setupEvents();
+    }
+
+    private callMicroflow(callback: () => void) {
+        mx.data.action({
+            params: {
+                actionname: this.onPullMicroflow!
+            },
+            origin: this.mxform,
+            context: this.mxcontext,
+            callback,
+            error: error => {
+                mx.ui.error(`Failed to execute pull action microflow: ${error.message}`);
+                callback();
+            }
+        });
+    }
+
+    private callNanoflow(callback: () => void) {
+        mx.data.callNanoflow({
+            nanoflow: this.onPullNanoflow,
+            origin: this.mxform,
+            context: this.mxcontext,
+            callback,
+            error: error => {
+                mx.ui.error(`Failed to execute pull action nanoflow: ${error.message}`);
+                callback();
+            }
+        });
     }
 }
 
